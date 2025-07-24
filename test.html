@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 40px;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      background-color: #3399cc;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #287fa8;
+    }
+  </style>
+
+<body>
+   <div class="container">
+    <h1>🧾 Razorpay Test Payment</h1>
+    <button onclick="payNow()">Pay Now</button>
+  </div>
+
+   <script>
+      function payNow() {
+         const options = {
+            key: "rzp_test_fb4I4877lvugcl",
+            amount: 1200000,
+            currency: "INR",
+            name: "Test Store",
+            description: "Test payment",
+            order_id: "order_QlRBnr7JbMBhE0",
+            handler: function (response) {
+               console.log("✔ razorpay_order_id:", response.razorpay_order_id);
+               console.log("✔ razorpay_payment_id:", response.razorpay_payment_id);
+               console.log("✔ razorpay_signature:", response.razorpay_signature);
+               alert("Payment completed for payment details check console");  
+            },
+            prefill: {
+               name: "Akash kushwaha",
+               email: "test@example.com",
+               contact: "8369386624"
+            },
+            theme: {
+               color: "#3399cc"
+            }
+         };
+         const rzp = new Razorpay(options);
+         rzp.open();
+      }
+   </script>
+</body>
+
+</html>
