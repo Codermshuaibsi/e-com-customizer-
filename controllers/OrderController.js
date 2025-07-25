@@ -1,6 +1,9 @@
 const User = require("../models/userModel");
-const Order = require("../models/orderModel");
+// const Order = require("../models/orderModel");
+const Order =require("../models/orderModel")
 const Product = require("../models/productModel");
+const mongoose = require("mongoose");
+
 
 
 // exports.fetchOrderHistory = async (req, res) => {
@@ -224,12 +227,13 @@ exports.fetchOrderHistory = async (req, res) => {
       orderHistory,
     });
   } catch (error) {
-    console.error("Fetch order history error:", error.message);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
+  console.error("Fetch order history error:", error);
+  return res.status(500).json({
+    success: false,
+    message: "Internal server error",
+    error: error.message, // include message for debugging
+  });
+}
 };
 
 // total revenue stats 

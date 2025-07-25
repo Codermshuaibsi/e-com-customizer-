@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     enum: ["Admin", "User"],
     default: "User",
   },
-  address: {
+  address: [{
     country: {
       type: String,
     },
@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
     city: {
       type: String,
     },
-  },
+  }],
   favouriteGame: {
     type: String,
     require: true

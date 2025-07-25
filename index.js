@@ -37,11 +37,12 @@ const cart = require("./routers/cartRouter");
 const coupon = require("./routers/cuponRouter");
 const Payments = require("./routers/PaymentsRouter");
 const admin = require("./routers/adminRoutes");
-
+const ShippingAddress = require("./routers/ShippingAddressRoutes")
 // Routes declaration
 app.use("/api/v1", user); 
 app.use("/api/v1", product);
 app.use("/api/v1", order);
+app.use("/api/v1", ShippingAddress);
 app.use("/api/v1", cart);  
 app.use("/api/v1", coupon);
 app.use("/api/v1/payment", Payments); 

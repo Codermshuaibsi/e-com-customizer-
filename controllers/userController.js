@@ -40,56 +40,98 @@ exports.getUserDetails = async (req, res) => {
 // postUser
 exports.signUp = async (req, res) => {
   try {
-    const { firstName, lastName, phoneNumber, email, password, role, favouriteGame } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      phoneNumber,
+      email,
+      password,
+      role,
+      favouriteGame,
+      address,
+      state,
+      pincode,
+      city,
+    } = req.body;
 
-    if (!firstName || !email || !lastName || !phoneNumber || !password || !favouriteGame) {
+    // 🛑 Basic validation
+    if (
+      !firstName ||
+      !email ||
+      !lastName ||
+      !phoneNumber ||
+      !password ||
+      !favouriteGame ||
+      !address ||
+      !state ||
+      !pincode ||
+      !city
+    ) {
       return res.status(403).json({
         success: false,
-        message: "all fields are required",
+        message: "All fields are required",
       });
     }
 
-    const existUser = await User.findOne({ email });
+    // ✅ Email Validation
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a valid email",
+      });
+    }
 
+    // ✅ Check if user exists
+    const existUser = await User.findOne({ email });
     if (existUser) {
       return res.status(400).json({
         success: false,
-        message: "User is aleady register",
+        message: "User is already registered",
       });
     }
-    if(!validator.isEmail(email)){
-      return res.json({success:false,message:"plese enter valid email"})
-    }
-   if (password.length < 6) {
-      return res.json({ success: false, message: "please enter strong password" })
+
+    // ✅ Password length check
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a stronger password (min 6 characters)",
+      });
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
 
+    // ✅ Create User
     const userDetails = await User.create({
       firstName,
       lastName,
       phoneNumber,
-      role,
       email,
-      favouriteGame,
       password: hashPassword,
+      role: role || "User",
+      favouriteGame,
+      address: {
+        addressLine: address,
+        state: state,
+        pincode: pincode,
+        city: city,
+      },
     });
 
     return res.status(200).json({
       success: true,
-      message: "user is register succesfully",
+      message: "User registered successfully",
       userDetails,
     });
   } catch (error) {
-    console.log(error);
+    console.log("Signup error:", error);
     return res.status(500).json({
       success: false,
-      message: "error in controller signup api",
+      message: "Error in signup controller",
     });
   }
-};  
+};
+
+  
 
 // Login with Google auth
 exports.LoginWithGoogle = async (req, res) => {
@@ -558,7 +600,7 @@ exports.getAdminById = async (req, res) => {
 // update address
 exports.updateAddress = async (req, res) => {
   try {
-    const { country, state, pincode, address, city } = req.body;
+    const { state, pincode, address, city } = req.body;
 
     if (!country || !state || !pincode || !address || !city) {
       return res.status(403).json({

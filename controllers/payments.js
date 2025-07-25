@@ -5,6 +5,8 @@ const crypto = require('crypto');
 const mongoose = require("mongoose");
 const Payment = require("../models/paymentModel")
 const Order = require("../models/orderModel")
+// const shippingAddress1 = require("../models/ShippingAddress");
+const addressmodel=require("../models/ShippingAddress ")
 
 const stripe = require("../config/strippay");
 
@@ -12,7 +14,8 @@ const stripe = require("../config/strippay");
 // working   properly stripe
 exports.capturePayment = async (req, res) => {
   try {
-    const { products, amount } = req.body;
+    const { products, amount,address,addressId } = req.body;
+    console.log(address,addressId,amount)
     const userId = req.user.id;
 
     if (!Array.isArray(products) || products.length === 0) {
@@ -40,12 +43,26 @@ exports.capturePayment = async (req, res) => {
       }
     }
 
-    const userDetails = await User.findById(userId);
-    if (!userDetails || !userDetails.address) {
-      return res.status(404).json({ success: false, message: "User or address not found" });
-    }
+const shippingAddressDoc = await addressmodel.findById(addressId);
 
-    const shippingAddress = userDetails.address.addressLine || "No address provided";
+if (!shippingAddressDoc) {
+  return res.status(404).json({ success: false, message: "Address not found" });
+}
+
+// Extract necessary fields
+const shippingAddress = {
+  fullName: shippingAddressDoc.fullName,
+  phone: shippingAddressDoc.phone,
+  state: shippingAddressDoc.state,
+  city: shippingAddressDoc.city,
+  pincode: shippingAddressDoc.pincode,
+  address: shippingAddressDoc.address,
+   landmark: shippingAddressDoc.landmark,
+  country: shippingAddressDoc.country,
+};
+
+console.log(shippingAddress);
+
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInPaise,
