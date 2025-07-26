@@ -200,17 +200,18 @@ exports.deleteOrder = async (req, res) => {
 
 exports.fetchOrderHistory = async (req, res) => {
   try {
-    const userId = req.user?.id || req.query.userId;
+    console.log("Fetching order history for user...");
+    const userId = req.user?.id ;
     console.log("User ID:", userId);
 
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    if(!userId) {
       return res.status(400).json({
         success: false,
-        message: "Invalid or missing user ID",
+        message: "User ID is required",
       });
     }
 
-    const orderHistory = await Order.find({ userId })
+    const orderHistory = await Order.find({userId})
       .populate("products")
       .sort({ createdAt: -1 });
 

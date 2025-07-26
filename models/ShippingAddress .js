@@ -22,6 +22,7 @@ const shippingAddressSchema = new mongoose.Schema(
     },
     landmark: {
       type: String,
+      required: true,
     },
     city: {
       type: String,
