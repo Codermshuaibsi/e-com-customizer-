@@ -138,7 +138,8 @@ exports.fetchSingleOrder = async (req, res) => {
 exports.updateOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { orderStatus, shippingAddress } = req.body;
+    const { orderStatus} = req.body;
+    // const { orderStatus, shippingAddress } = req.body;
 
     const order = await Order.findById({
       _id: orderId,
@@ -152,7 +153,7 @@ exports.updateOrder = async (req, res) => {
     }
 
     if (orderStatus) order.orderStatus = orderStatus;
-    if (shippingAddress) order.shippingAddress = shippingAddress;
+    // if (shippingAddress) order.shippingAddress = shippingAddress;
 
     const updatedOrder = await order.save();
 

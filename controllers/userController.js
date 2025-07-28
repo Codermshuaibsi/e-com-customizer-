@@ -673,7 +673,7 @@ exports.sendConnectMail = async (req, res) => {
 // forgot password
 exports.lostPasswordController = async (req, res) => {
   try {
-    const { email, favouriteGame, newPassword } = req.body;
+    const { email, newPassword } = req.body;
     if (!email) {
       return res.status(400).send({ message: "Email is required" });
     }
@@ -684,7 +684,7 @@ exports.lostPasswordController = async (req, res) => {
       return res.status(400).send({ message: "New Password is required" });
     }
     //check
-    const user = await User.findOne({ email, favouriteGame });
+    const user = await User.findOne({ email });
     //validation
     if (!user) {
       return res.status(404).send({
@@ -707,6 +707,39 @@ exports.lostPasswordController = async (req, res) => {
     });
   }
 }
- 
+
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const userId = req.user.id;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    const hashPassword = await bcrypt.hash(newPassword, 10);
+    await User.findByIdAndUpdate(user._id, { password: hashPassword });
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error updating password:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
 
 

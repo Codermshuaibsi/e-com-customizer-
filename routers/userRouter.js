@@ -18,6 +18,7 @@ const {
   LoginWithGoogle,
   lostPasswordController,
   updateprofile,
+  changePassword
 } = require("../controllers/userController");
 
 const { auth, isAdmin, isUser } = require("../middleware/auth");
@@ -60,10 +61,13 @@ router.delete("/deleteUser/:id", auth, isAdmin, deleteUser);
 
 router.get("/getUserDetail", auth, getUserDetails);
 
-router.get("/getUser/:id", getUserDetails);
+router.get("/getUser",auth,isUser, getUserDetails);
 
 router.post("/sendMail", sendConnectMail);
 
-router.post("/lostPassword", lostPasswordController)    
+router.post("/lostPassword", lostPasswordController)
+
+router.put("/change-password", auth, changePassword);
+
 
 module.exports = router;

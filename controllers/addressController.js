@@ -8,7 +8,6 @@ exports.createAddress = async (req, res) => {
        fullName,
       phone,
       address,
-      landmark,
       city,
       state,
       pincode,
@@ -41,12 +40,11 @@ exports.createAddress = async (req, res) => {
       fullName, // ✅ was missing
       phone,
       address,
-      landmark,
       city,
       state,
       pincode,
       country,
-      type: type || "Home",
+       type: (type && type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()) || "Home",
     });
 
     const savedAddress = await newAddress.save();
@@ -132,6 +130,11 @@ exports.updateAddress = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Normalize the "type" field
+    if (req.body.type) {
+      req.body.type = req.body.type.charAt(0).toUpperCase() + req.body.type.slice(1).toLowerCase();
+    }
+
     const updatedAddress = await ShippingAddress.findByIdAndUpdate(
       id,
       req.body,
@@ -162,6 +165,7 @@ exports.updateAddress = async (req, res) => {
     });
   }
 };
+
 
 // ✅ Delete Address by ID
 exports.deleteAddress = async (req, res) => {

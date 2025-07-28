@@ -63,6 +63,12 @@ exports.capturePayment = async (req, res) => {
 
 // console.log(shippingAddress);
 
+if (amountInPaise > 999999999) {
+  return res.status(400).json({
+    success: false,
+    message: "Amount exceeds Stripe's maximum allowed value (₹99,99,999.99)",
+  });
+}
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInPaise,
@@ -168,7 +174,7 @@ const shippingAddress = {
   city: shippingAddressDoc.city,
   pincode: shippingAddressDoc.pincode,
   address: shippingAddressDoc.address,
-  landmark: shippingAddressDoc.landmark || "N/A", // <-- THIS MUST NOT BE MISSING
+  // landmark: shippingAddressDoc.landmark || "N/A", // <-- THIS MUST NOT BE MISSING
   country: shippingAddressDoc.country,
 };
 
@@ -176,7 +182,7 @@ const shippingAddress = {
   userId,
   totalAmount: amountInPaise,
   products: productIds,
-shippingAddress,
+  shippingAddress,
   paymentMethod: "Stripe", // Required field
   orderStatus: "Processing",
 });
@@ -201,6 +207,63 @@ shippingAddress,
     });
   }
 };
+
+
+// Place COD Order
+exports.placeCodOrder = async (req, res) => {
+  try {
+    const { products, amount, addressId } = req.body;
+    const userId = req.user.id;
+
+    // Validate
+    if (!products || !Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({ success: false, message: "Invalid product list" });
+    }
+    if (!addressId) {
+      return res.status(400).json({ success: false, message: "Address ID is required" });
+    }
+
+    const addressDoc = await addressmodel.findById(addressId);
+    if (!addressDoc) {
+      return res.status(404).json({ success: false, message: "Address not found" });
+    }
+  console.log(addressDoc);
+  const shippingAddress = {
+  fullName: addressDoc.fullName,
+  phone: addressDoc.phone,
+  state: addressDoc.state,
+  city: addressDoc.city,
+  pincode: addressDoc.pincode,
+  address: addressDoc.address,
+  country: addressDoc.country, // this might be undefined
+};
+
+    const productIds = products.map(id => new mongoose.Types.ObjectId(id));
+
+    const newOrder = new Order({
+      userId,
+      products: productIds,
+      totalAmount: amount * 100, // storing in paise for consistency
+      shippingAddress,
+      paymentMethod: "COD",
+      paymentStatus: "Pending", // COD => not paid yet
+      orderStatus: "Pending",
+    });
+
+    await newOrder.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Order placed successfully via COD",
+      orderId: newOrder._id,
+    });
+
+  } catch (error) {
+    console.error("COD order error:", error);
+    res.status(500).json({ success: false, message: "Failed to place COD order" });
+  }
+};
+
 
 
 

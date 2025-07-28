@@ -19,9 +19,9 @@ router.get("/getAllAddresses",auth ,isUser , getAddresses);
 router.get("/getSingleAddress/:id",auth ,isUser, getSingleAddress);
 
 // ✅ Update address by address ID
-router.put("updateAddress/:id", updateAddress);
+router.put("/updateAddress/:id",auth ,isUser , updateAddress);
 
 // ✅ Delete address by address ID
-router.delete("deleteAddress/:id" ,auth ,isUser ,deleteAddress);
+router.delete("/deleteAddress/:id" ,auth ,isUser ,deleteAddress);
 
 module.exports = router;

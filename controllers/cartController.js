@@ -8,7 +8,8 @@ exports.addToCart = async (req, res) => {
     const { productId } = req.params;
 
     const userId = req.user.id;
-
+     
+    console.log(productId,userId);
     
     if (!productId || !userId) {
       return res.status(403).json({
