@@ -6,100 +6,100 @@ const Product = require("../models/productModel");
 exports.addToCart = async (req, res) => {
   try {
     const { productId } = req.params;
-
+    const { quantity = 1 } = req.body;
     const userId = req.user.id;
-     
-    console.log(productId,userId);
-    
+
     if (!productId || !userId) {
       return res.status(403).json({
         success: false,
-        message: "please send the productId",
+        message: "Please provide productId and userId",
       });
     }
 
-    // check valid product ID or not
-    const productDetails = await Product.findById(productId);
-    console.log(productDetails)
-
-    if (!productDetails) {
+    const product = await Product.findById(productId);
+    if (!product) {
       return res.status(404).json({
         success: false,
-        message: "The product do not exist with this id ",
+        message: "Product not found",
       });
     }
 
-       // Check if the product is in stock
-       if (productDetails.quantity <= 0) {
-        return res.status(400).json({
-          success: false,
-          message: "Product is out of stock",
-        });
-      }
-  
-      // Add user to the cart array and decrease product quantity
-      productDetails.cart.push(userId);
-      productDetails.quantity -= 1; // Reduce stock by 1
-      await productDetails.save();
+    if (product.quantity < quantity) {
+      return res.status(400).json({
+        success: false,
+        message: `Only ${product.quantity} items left in stock`,
+      });
+    }
 
-    // await productDetails.cart.push(userId);
-    // await productDetails.save();
+    // Check if user already added to cart
+    const existingItem = product.cart.find(
+      (item) => item.userId.toString() === userId
+    );
+
+    if (existingItem) {
+      existingItem.quantity += quantity;
+    } else {
+      product.cart.push({ userId, quantity });
+    }
+
+    product.quantity -= quantity;
+    await product.save();
 
     res.status(200).json({
-      success:true , 
-      message: "Product added to cart successfully" });
+      success: true,
+      message: "Product added to cart successfully",
+    });
   } catch (error) {
-    console.log(error);
+    console.error("Add to cart error:", error.message);
     return res.status(500).json({
-      error,
       success: false,
-      message: "error in add to cart",
+      message: "Internal server error while adding to cart",
     });
   }
-};  
+};
+
 
 // remove from cart
 
 exports.removeFromCart = async (req, res) => {
   try {
     const { productId } = req.params;
-
     const userId = req.user.id;
 
-    if (!productId || !userId) {
-      return res.status(403).json({
-        success: false,
-        message: "please send the productId",
-      });
-    }
-
-    // check valid product ID or not
-    const productDetails = await Product.findById(productId);
-
-    
-
-    if (!productDetails) {
+    const product = await Product.findById(productId);
+    if (!product) {
       return res.status(404).json({
         success: false,
-        message: "The product do not exist with this id ",
+        message: "Product not found",
       });
     }
 
-    const indexToRemove = productDetails.cart ? productDetails.cart.indexOf(userId) : -1;
+    const itemIndex = product.cart.findIndex(
+      (item) => item.userId.toString() === userId
+    );
 
-    if (indexToRemove !== -1) {
-      productDetails.cart.splice(indexToRemove, 1);
-      await productDetails.save();
-      res.status(200).json({ message: "Product removed from cart successfully"  , success:true});
-
-    } else {
-      res.status(404).json({ error: "User not found in the product's cart" });
+    if (itemIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found in your cart",
+      });
     }
+
+    const removedItem = product.cart[itemIndex];
+    product.quantity += removedItem.quantity;
+
+    product.cart.splice(itemIndex, 1);
+    await product.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Product removed from cart successfully",
+    });
   } catch (error) {
-    console.log(error);
+    console.error("Remove from cart error:", error.message);
     return res.status(500).json({
       success: false,
-      message: "error in remove cart , internal server error ",
+      message: "Internal server error while removing from cart",
     });
   }
 };
@@ -118,8 +118,8 @@ exports.removeAllFromCart = async (req, res) => {
 
     // Find all products that belong to the user's cart
     const productsInCart = await Product.find({ cart: userId });
- 
-    
+
+
     if (!productsInCart || productsInCart.length === 0) {
       return res.status(404).json({
         success: false,
@@ -164,7 +164,7 @@ exports.removeAllFromCart = async (req, res) => {
 //     }
 
 //     const cartItems = await Product.find({ cart: userId });
-    
+
 
 //     res.status(200).json({success:true ,
 //       message:"successfuly fetch the all cart item of user " });
@@ -177,12 +177,9 @@ exports.removeAllFromCart = async (req, res) => {
 //   }
 // };
 
- 
 exports.fetchAllCartItem = async (req, res) => {
   try {
-    // const userId = req.params.id || req.user?.id;
     const userId = req.user?.id || req.params.id || req.query.userId;
-    console.log("User ID:", userId);
 
     if (!userId) {
       return res.status(403).json({
@@ -191,15 +188,30 @@ exports.fetchAllCartItem = async (req, res) => {
       });
     }
 
-    const cartItems = await Product.find({ cart: userId });
+    const products = await Product.find({
+      "cart.userId": userId,
+    });
+
+    const cartItems = products.map((product) => {
+      const userCartEntry = product.cart.find(
+        (item) => item.userId.toString() === userId
+      );
+      return {
+        productId: product._id,
+        title: product.title,
+        price: product.price,
+        quantity: userCartEntry.quantity,
+        thumbnail: product.thumbnail,
+      };
+    });
 
     return res.status(200).json({
       success: true,
-      message: "Successfully fetched all cart items of the user",
-      cartItems, 
+      message: "Cart items fetched successfully",
+      cartItems,
     });
   } catch (error) {
-    console.error("Cart fetch error:", error.message);
+    console.error("Fetch cart error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Internal Server Error in fetch all cart items",

@@ -29,8 +29,15 @@ const productSchema = new mongoose.Schema({
   },
   cart: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      quantity: {
+        type: Number,
+        default: 1,
+        min: 1,
+      },
     },
   ],
   quantity: {
@@ -38,20 +45,20 @@ const productSchema = new mongoose.Schema({
     required: true,
     default: 0,
   },
-   color: {
+  color: {
     type: String,
-    require :true,
-   
+    require: true,
+
   },
   brand: {
     type: String,
-    require :true,
-   
+    require: true,
+
   },
   variant: {
     type: String,
-    require :true,
-   
+    require: true,
+
   },
   wishlist: [
     {
