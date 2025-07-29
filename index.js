@@ -15,7 +15,7 @@ dbConnect();
 
 // Middleware
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: "*",
   credentials: true,              
 }));
 app.use(express.urlencoded({ extended: false }));
@@ -39,6 +39,10 @@ const Payments = require("./routers/PaymentsRouter");
 const admin = require("./routers/adminRoutes");
 const ShippingAddress = require("./routers/ShippingAddressRoutes")
 const DiscountRouter = require("./routers/DiscountRouter");
+const variationRoutes = require("./routers/VariationRoutes");
+const unitRoutes = require("./routers/UnitRotes");
+const taxRoutes = require("./routers/TaxesRoute");
+const brandRoutes = require("./routers/BrandRoutes");
 // Routes declaration
 app.use("/api/v1", user); 
 app.use("/api/v1", product);
@@ -49,6 +53,11 @@ app.use("/api/v1", coupon);
 app.use("/api/v1/payment", Payments); 
 app.use("/api/v1/admin", admin);
 app.use('/api/v1',DiscountRouter)
+app.use('/api/v1',variationRoutes);
+app.use('/api/v1', unitRoutes);
+app.use('/api/v1', brandRoutes);2
+app.use('/api/v1', taxRoutes);
+
 
 // Start server
 const PORT = process.env.PORT || 4000;
