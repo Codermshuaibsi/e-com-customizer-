@@ -38,6 +38,7 @@ const coupon = require("./routers/cuponRouter");
 const Payments = require("./routers/PaymentsRouter");
 const admin = require("./routers/adminRoutes");
 const ShippingAddress = require("./routers/ShippingAddressRoutes")
+const DiscountRouter = require("./routers/DiscountRouter");
 // Routes declaration
 app.use("/api/v1", user); 
 app.use("/api/v1", product);
@@ -47,6 +48,7 @@ app.use("/api/v1", cart);
 app.use("/api/v1", coupon);
 app.use("/api/v1/payment", Payments); 
 app.use("/api/v1/admin", admin);
+app.use('/api/v1',DiscountRouter)
 
 // Start server
 const PORT = process.env.PORT || 4000;
