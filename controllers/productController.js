@@ -5,13 +5,13 @@ const SubCategory = require("../models/productSubCategory");
 // create product
 exports.createProduct = async (req, res) => {
   try {
-    const { title, description, price, quantity,color, subCategoryId,brand,variant } = req.body;
+    const { title, description, price, quantity, color, subCategoryId, brand, variant } = req.body;
 
     const thumbnail = req.files.thumbnail;
 
     const userId = req.user.id;
 
-    if (!title || !description || !price || !thumbnail || !subCategoryId || !quantity || !color  || !brand || !variant) {
+    if (!title || !description || !price || !thumbnail || !subCategoryId || !quantity || !color || !brand || !variant) {
       return res.status(403).json({
         success: false,
         message: "all fields are required",
@@ -79,13 +79,13 @@ exports.createProduct = async (req, res) => {
 // update produc
 exports.updateProduct = async (req, res) => {
   try {
-    const { title, description, price , quantity,color } = req.body;
+    const { title, description, price, quantity, color } = req.body;
 
     const thumbnail = req.files?.thumbnail;
 
     const { productId } = req.params;
 
-     if (!title || !description || !price || !thumbnail || !quantity || !color) {
+    if (!title || !description || !price || !thumbnail || !quantity || !color) {
       return res.status(403).json({
         success: false,
         message: "all fields are required",
@@ -121,10 +121,10 @@ exports.updateProduct = async (req, res) => {
     if (price) {
       productDetails.price = price;
     }
-     if (quantity) {
+    if (quantity) {
       productDetails.quantity = quantity;
     }
-     if (color) {
+    if (color) {
       productDetails.color = color;
     }
 
@@ -252,7 +252,7 @@ exports.getProductById = async (req, res) => {
 
 exports.totalProduct = async (req, res) => {
   try {
-    const AllProduct = await Product.find({});
+    const AllProduct = await Product.find({}).populate('brand').populate('subCategory').populate('variant');
 
     return res.status(200).json({
       success: true,
@@ -314,7 +314,7 @@ exports.searchProduct = async (req, res) => {
     const products = await Product.find({
       $or: [
         { title: { $regex: query, $options: "i" } },
-        { description: { $regex: query, $options: "i" }},
+        { description: { $regex: query, $options: "i" } },
       ],
     })
     if (!products) {
