@@ -200,12 +200,12 @@ exports.deleteProduct = async (req, res) => {
 // fetch all products
 exports.fetchAllProducts = async (req, res) => {
   try {
-    const allProducts = await Product.find().populate('brand').populate('variant').populate('subCategory');
+    const allProducts = await Product.find().populate('brand').populate('variant');
     res.status(200).json({
       success: true,
       message: "successfuly all products",
       Total: allProducts.length,
-      allProducts: allProducts[allProducts.length - 1]
+      AllProduct: allProducts[allProducts.length - 1]
     });
   } catch (error) {
     console.log(error);
@@ -228,7 +228,7 @@ exports.getProductById = async (req, res) => {
       });
     }
 
-    const productDetails = await Product.find().populate('brand').populate('variant').populate('subCategory');
+    const productDetails = await Product.find().populate('brand').populate('variant');
 
     if (!productDetails) {
       return res.status(404).json({
@@ -251,6 +251,22 @@ exports.getProductById = async (req, res) => {
   }
 };
 
+// exports.totalProduct = async (req, res) => {
+//   try {
+//     const AllProduct = await Product.find({});
+
+//     return res.status(200).json({
+//       success: true,
+//       AllProduct,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal server error ",
+//     });
+//   }
+// };
 
 exports.productQuantity = async (req, res) => {
   try {

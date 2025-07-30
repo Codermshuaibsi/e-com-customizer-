@@ -10,8 +10,9 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
-  fetchAllProducts,
+  // fetchAllProducts,
   getProductById,
+  totalProduct,
   productQuantity,
   searchProduct
 } = require("../controllers/productController");     
@@ -44,13 +45,13 @@ router.post("/createProduct", auth, isAdmin, createProduct);
 
 router.put("/updateProduct/:productId", auth, isAdmin, updateProduct);
 
-// router.get("/totalProduct", totalProduct);
+router.get("/totalProduct", totalProduct);
 
 router.delete("/deleteProduct/:productID", auth, isAdmin, deleteProduct);
 
 router.get("/getProductById/:productId", getProductById);
 
-router.get("/totalProduct", fetchAllProducts);
+// router.get("/fetchAllProducts", fetchAllProducts);
 
 router.post("/productQuantity/:productId", auth, isUser, productQuantity);
 
