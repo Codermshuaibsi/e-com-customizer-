@@ -45,7 +45,7 @@ router.post("/createProduct", auth, isAdmin, createProduct);
 
 router.put("/updateProduct/:productId", auth, isAdmin, updateProduct);
 
-router.get("/totalProduct", totalProduct);
+// router.get("/totalProduct", totalProduct);
 
 router.delete("/deleteProduct/:productID", auth, isAdmin, deleteProduct);
 

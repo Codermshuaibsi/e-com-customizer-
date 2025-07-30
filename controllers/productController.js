@@ -6,7 +6,7 @@ const SubCategory = require("../models/productSubCategory");
 exports.createProduct = async (req, res) => {
   try {
     const { title, description, price, quantity, color, subCategoryId, brand, variant } = req.body;
-
+    console.log(title, description, price, quantity, color, subCategoryId, brand, variant);
     const thumbnail = req.files.thumbnail;
 
     const userId = req.user.id;
@@ -62,6 +62,8 @@ exports.createProduct = async (req, res) => {
       { new: true }
     );
 
+    let final = await Product.findById(product?._id).populate('brand').populate('variant');
+    console.log(final)
     return res.status(200).json({
       success: true,
       message: "successfuly created the product ",
@@ -198,15 +200,12 @@ exports.deleteProduct = async (req, res) => {
 // fetch all products
 exports.fetchAllProducts = async (req, res) => {
   try {
-    const allProducts = await Product.find()
-      .populate("brand","name")
-      .populate("variant","name");
-
-  res.status(200).json({
+    const allProducts = await Product.find().populate('brand').populate('variant').populate('subCategory');
+    res.status(200).json({
       success: true,
       message: "successfuly all products",
       Total: allProducts.length,
-      allProducts
+      allProducts: allProducts[allProducts.length - 1]
     });
   } catch (error) {
     console.log(error);
@@ -229,7 +228,7 @@ exports.getProductById = async (req, res) => {
       });
     }
 
-    const productDetails = await Product.findOne({ _id: productId });
+    const productDetails = await Product.find().populate('brand').populate('variant').populate('subCategory');
 
     if (!productDetails) {
       return res.status(404).json({
@@ -241,7 +240,7 @@ exports.getProductById = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "successfuly fetch the product Details",
-      data: productDetails,
+      data: productDetails[productDetails.length - 1],
     });
   } catch (error) {
     console.log(error);
@@ -252,22 +251,6 @@ exports.getProductById = async (req, res) => {
   }
 };
 
-exports.totalProduct = async (req, res) => {
-  try {
-    const AllProduct = await Product.find({});
-
-    return res.status(200).json({
-      success: true,
-      AllProduct,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error ",
-    });
-  }
-};
 
 exports.productQuantity = async (req, res) => {
   try {
