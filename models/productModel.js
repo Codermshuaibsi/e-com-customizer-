@@ -60,12 +60,13 @@ const productSchema = new mongoose.Schema({
 
   },
   brand: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Brand",
     require: true,
-
   },
   variant: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Variant",
     require: true,
 
   },
