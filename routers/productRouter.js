@@ -14,7 +14,8 @@ const {
   getProductById,
   totalProduct,
   productQuantity,
-  searchProduct
+  searchProduct,
+  fetchAllProducts
 } = require("../controllers/productController");     
 
 
@@ -45,7 +46,7 @@ router.post("/createProduct", auth, isAdmin, createProduct);
 
 router.put("/updateProduct/:productId", auth, isAdmin, updateProduct);
 
-router.get("/totalProduct", totalProduct);
+router.get("/totalProduct", fetchAllProducts);
 
 router.delete("/deleteProduct/:productID", auth, isAdmin, deleteProduct);
 
