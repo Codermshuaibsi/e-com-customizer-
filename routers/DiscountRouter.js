@@ -3,7 +3,7 @@
     const discountController = require('../controllers/DiscountControllers');
 
     router.post('/discounts', discountController.createDiscount);
-    router.get('/discounts', discountController.getAllDiscounts);
+    router.get('/discounts', discountController.getDiscounts);
     router.put('/discounts/:id', discountController.updateDiscount);
     router.delete('/discounts/:id', discountController.deleteDiscount);
 

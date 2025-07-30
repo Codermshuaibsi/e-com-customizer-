@@ -40,15 +40,6 @@ const productSchema = new mongoose.Schema({
       },
     },
   ],
-  isDiscounted: {
-    type: Boolean,
-    default: false
-  },
-  activeDiscountId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Discount',
-    default: null
-  },
   quantity: {
     type: Number,
     required: true,
@@ -60,13 +51,12 @@ const productSchema = new mongoose.Schema({
 
   },
   brand: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Brand",
+    type: String,
     require: true,
+
   },
   variant: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Variant",
+    type: String,
     require: true,
 
   },
