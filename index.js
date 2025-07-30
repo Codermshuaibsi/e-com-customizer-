@@ -55,7 +55,7 @@ app.use("/api/v1/admin", admin);
 app.use('/api/v1',DiscountRouter)
 app.use('/api/v1',variationRoutes);
 app.use('/api/v1', unitRoutes);
-app.use('/api/v1', brandRoutes);2
+app.use('/api/v1', brandRoutes);
 app.use('/api/v1', taxRoutes);
 
 
