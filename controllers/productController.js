@@ -5,13 +5,13 @@ const SubCategory = require("../models/productSubCategory");
 // create product
 exports.createProduct = async (req, res) => {
   try {
-    const { title, description, price, quantity,color, subCategoryId,brand,variant } = req.body;
+    const { title, description, price, quantity, color, subCategoryId, brand, variant } = req.body;
 
     const thumbnail = req.files.thumbnail;
 
     const userId = req.user.id;
 
-    if (!title || !description || !price || !thumbnail || !subCategoryId || !quantity || !color  || !brand || !variant) {
+    if (!title || !description || !price || !thumbnail || !subCategoryId || !quantity || !color || !brand || !variant) {
       return res.status(403).json({
         success: false,
         message: "all fields are required",
@@ -79,13 +79,13 @@ exports.createProduct = async (req, res) => {
 // update produc
 exports.updateProduct = async (req, res) => {
   try {
-    const { title, description, price , quantity,color } = req.body;
+    const { title, description, price, quantity, color } = req.body;
 
     const thumbnail = req.files?.thumbnail;
 
     const { productId } = req.params;
 
-     if (!title || !description || !price || !thumbnail || !quantity || !color) {
+    if (!title || !description || !price || !thumbnail || !quantity || !color) {
       return res.status(403).json({
         success: false,
         message: "all fields are required",
@@ -121,10 +121,10 @@ exports.updateProduct = async (req, res) => {
     if (price) {
       productDetails.price = price;
     }
-     if (quantity) {
+    if (quantity) {
       productDetails.quantity = quantity;
     }
-     if (color) {
+    if (color) {
       productDetails.color = color;
     }
 
@@ -198,9 +198,11 @@ exports.deleteProduct = async (req, res) => {
 // fetch all products
 exports.fetchAllProducts = async (req, res) => {
   try {
-    const allProducts = await Product.find({}).populate("subCategory");
+    const allProducts = await Product.find()
+      .populate("brand","name")
+      .populate("variant","name");
 
-    return res.status(200).json({
+  res.status(200).json({
       success: true,
       message: "successfuly all products",
       Total: allProducts.length,
@@ -314,7 +316,7 @@ exports.searchProduct = async (req, res) => {
     const products = await Product.find({
       $or: [
         { title: { $regex: query, $options: "i" } },
-        { description: { $regex: query, $options: "i" }},
+        { description: { $regex: query, $options: "i" } },
       ],
     })
     if (!products) {

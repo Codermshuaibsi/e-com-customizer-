@@ -18,6 +18,10 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  discountedPrice: {
+    type: Number,
+    default: 0,
+  },
   thumbnail: [
     {
       type: String,
@@ -51,14 +55,14 @@ const productSchema = new mongoose.Schema({
 
   },
   brand: {
-    type: String,
-    require: true,
-
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Brand",
+    required: true,
   },
   variant: {
-    type: String,
-    require: true,
-
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Variation",
+    required: true,
   },
   wishlist: [
     {
