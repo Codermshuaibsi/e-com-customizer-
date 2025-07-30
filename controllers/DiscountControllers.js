@@ -1,10 +1,11 @@
 const Product = require('../models/productModel'); // Adjust path as needed
-const Discount = require('../models/Discount'); // Adjust path as needed
+const Discount = require('../models/DiscountModel'); // Adjust path as needed
 
-// CREATE DISCOUNT - Updates product priceexports.createDiscount = async (req, res) => {
-if (!req.body.product || !req.body.discountType || !req.body.discountValue || !req.body.validFrom || !req.body.validTo) {
-  return res.status(400).json({ success: false, message: "All fields are required" });
-}
+// CREATE DISCOUNT - Updates product price
+exports.createDiscount = async (req, res) => {
+  if (!req.body.product || !req.body.discountType || !req.body.discountValue || !req.body.validFrom || !req.body.validTo) {
+    return res.status(400).json({ success: false, message: "All fields are required" });
+  }
 
 try {
   // 1. Find the product
@@ -63,7 +64,7 @@ try {
 } catch (err) {
   res.status(400).json({ success: false, error: err.message });
 }
-};
+}
 
 // DELETE/REMOVE DISCOUNT - Restores original price
 exports.deleteDiscount = async (req, res) => {
