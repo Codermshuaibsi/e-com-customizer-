@@ -26,6 +26,7 @@ router.post('/removeFromCart/:productId' ,auth , isUser ,  removeFromCart);
 
 router.post('/removeAllFromCart' ,auth , isUser ,  removeAllFromCart);   
 
+router.put('/updateCartQuantity/:productId', auth, isUser, updateCartQuantity);
 
 
 // ***************************************************************************************

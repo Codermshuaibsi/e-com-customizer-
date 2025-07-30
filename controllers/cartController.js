@@ -219,3 +219,57 @@ exports.fetchAllCartItem = async (req, res) => {
   }
 };
 
+exports.updateCartQuantity = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { quantity } = req.body;
+    const userId = req.user.id;
+
+    if (!productId || !userId || !quantity) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide productId, userId, and quantity",
+      });
+    }
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    const cartItem = product.cart.find(
+      (item) => item.userId.toString() === userId
+    );
+
+    if (!cartItem) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found in your cart",
+      });
+    }
+
+    if (quantity < 1 || quantity > product.quantity) {
+      return res.status(400).json({
+        success: false,
+        message: `Quantity must be between 1 and ${product.quantity}`,
+      });
+    }
+
+    cartItem.quantity = quantity;
+    await product.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Cart quantity updated successfully",
+    });
+  } catch (error) {
+    console.error("Update cart quantity error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error while updating cart quantity",
+    });
+  }
+};
