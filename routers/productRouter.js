@@ -54,7 +54,7 @@ router.get("/getProductById/:productId", getProductById);
 router.get("/fetchAllProducts", fetchAllProducts);
 
 router.post("/productQuantity/:productId", auth, isUser, productQuantity);
-
+  
 router.get("/search/product",searchProduct)
 
 // ********************************************************************************************************

@@ -1,6 +1,6 @@
 const User = require("../models/userModel");
 // const Order = require("../models/orderModel");
-const Order =require("../models/orderModel")
+const Order = require("../models/orderModel")
 const Product = require("../models/productModel");
 const mongoose = require("mongoose");
 
@@ -57,11 +57,13 @@ exports.fetchOrders = async (req, res) => {
         message: "No orders found",
       });
     }
+    console.log('response fetched')
     return res.status(200).json({
       success: true,
       message: "Orders fetched successfully",
       orders,
     });
+
   } catch (error) {
     console.error("Error fetching orders:", error);
     return res.status(500).json({
@@ -112,7 +114,7 @@ exports.fetchSingleOrder = async (req, res) => {
 
     console.log(`Fetching order with ID: ${orderId}`);
 
-    const order = await Order.findById({_id: orderId}).populate("userId").populate("products.productId");
+    const order = await Order.findById({ _id: orderId }).populate("products").populate('userId');
 
     if (!order) {
       return res.status(404).json({
@@ -138,7 +140,7 @@ exports.fetchSingleOrder = async (req, res) => {
 exports.updateOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { orderStatus} = req.body;
+    const { orderStatus } = req.body;
     // const { orderStatus, shippingAddress } = req.body;
 
     const order = await Order.findById({
@@ -202,17 +204,17 @@ exports.deleteOrder = async (req, res) => {
 exports.fetchOrderHistory = async (req, res) => {
   try {
     console.log("Fetching order history for user...");
-    const userId = req.user?.id ;
+    const userId = req.user?.id;
     console.log("User ID:", userId);
 
-    if(!userId) {
+    if (!userId) {
       return res.status(400).json({
         success: false,
         message: "User ID is required",
       });
     }
 
-    const orderHistory = await Order.find({userId})
+    const orderHistory = await Order.find({ userId })
       .populate("products")
       .sort({ createdAt: -1 });
 
@@ -229,13 +231,13 @@ exports.fetchOrderHistory = async (req, res) => {
       orderHistory,
     });
   } catch (error) {
-  console.error("Fetch order history error:", error);
-  return res.status(500).json({
-    success: false,
-    message: "Internal server error",
-    error: error.message, // include message for debugging
-  });
-}
+    console.error("Fetch order history error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message, // include message for debugging
+    });
+  }
 };
 
 // total revenue stats 

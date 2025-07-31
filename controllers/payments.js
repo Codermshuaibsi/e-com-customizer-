@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const Payment = require("../models/paymentModel")
 const Order = require("../models/orderModel")
 // const shippingAddress1 = require("../models/ShippingAddress");
-const addressmodel=require("../models/ShippingAddress ")
+const addressmodel = require("../models/ShippingAddress ")
 
 const stripe = require("../config/strippay");
 
@@ -14,8 +14,8 @@ const stripe = require("../config/strippay");
 // working   properly stripe
 exports.capturePayment = async (req, res) => {
   try {
-    const { products, amount,address,addressId } = req.body;
-    console.log(address,addressId,amount,products)
+    const { products, amount, address, addressId } = req.body;
+    console.log(address, addressId, amount, products)
     const userId = req.user.id;
 
     if (!Array.isArray(products) || products.length === 0) {
@@ -43,32 +43,32 @@ exports.capturePayment = async (req, res) => {
       }
     }
 
-// const shippingAddressDoc = await addressmodel.findById(addressId);
+    // const shippingAddressDoc = await addressmodel.findById(addressId);
 
-// if (!shippingAddressDoc) {
-//   return res.status(404).json({ success: false, message: "Address not found" });
-// }
+    // if (!shippingAddressDoc) {
+    //   return res.status(404).json({ success: false, message: "Address not found" });
+    // }
 
-// // Extract necessary fields
-// const shippingAddress = {
-//   fullName: shippingAddressDoc.fullName,
-//   phone: shippingAddressDoc.phone,
-//   state: shippingAddressDoc.state,
-//   city: shippingAddressDoc.city,
-//   pincode: shippingAddressDoc.pincode,
-//   address: shippingAddressDoc.address,
-//   landmark: shippingAddressDoc.landmark,
-//   country: shippingAddressDoc.country,
-// };
+    // // Extract necessary fields
+    // const shippingAddress = {
+    //   fullName: shippingAddressDoc.fullName,
+    //   phone: shippingAddressDoc.phone,
+    //   state: shippingAddressDoc.state,
+    //   city: shippingAddressDoc.city,
+    //   pincode: shippingAddressDoc.pincode,
+    //   address: shippingAddressDoc.address,
+    //   landmark: shippingAddressDoc.landmark,
+    //   country: shippingAddressDoc.country,
+    // };
 
-// console.log(shippingAddress);
+    // console.log(shippingAddress);
 
-if (amountInPaise > 999999999) {
-  return res.status(400).json({
-    success: false,
-    message: "Amount exceeds Stripe's maximum allowed value (₹99,99,999.99)",
-  });
-}
+    if (amountInPaise > 999999999) {
+      return res.status(400).json({
+        success: false,
+        message: "Amount exceeds Stripe's maximum allowed value (₹99,99,999.99)",
+      });
+    }
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInPaise,
@@ -105,9 +105,9 @@ if (amountInPaise > 999999999) {
 // stripe
 exports.verifyPayment = async (req, res) => {
   try {
-    const { products,paymentIntentId,addressId,amount } = req.body;
+    const { products, paymentIntentId, addressId, amount } = req.body;
     const userId = req.user.id;
-    console.log("dssdsd",addressId,amount)
+    console.log("dssdsd", addressId, amount)
 
     if (!paymentIntentId || !addressId || !amount) {
       return res.status(400).json({ success: false, message: "Missing required fields" });
@@ -124,70 +124,98 @@ exports.verifyPayment = async (req, res) => {
         status: paymentIntent.status,
         payment_method: paymentIntent.payment_method,
       });
- 
-   
-     const amountInPaise = Math.round(amount * 100); // Stripe needs amount in paise
-
-    if (!amountInPaise || amountInPaise < 100) {
-      return res.status(400).json({
-        success: false,
-        message: "Amount must be at least ₹1",
-      });
-    }
 
 
-       const productIds = [];
-    for (const productId of products) {
-      if (mongoose.Types.ObjectId.isValid(productId)) {
-        productIds.push(new mongoose.Types.ObjectId(productId));
-      } else {
+      const amountInPaise = Math.round(amount * 100); // Stripe needs amount in paise
+
+      if (!amountInPaise || amountInPaise < 100) {
         return res.status(400).json({
           success: false,
-          message: "Invalid product ID provided: " + productId,
+          message: "Amount must be at least ₹1",
         });
       }
-    }
 
 
-    const shippingAddressDoc = await addressmodel.findById(addressId);
+      const orderedProducts = [];
 
-if (!shippingAddressDoc) {
-  return res.status(404).json({ success: false, message: "Address not found" });
-}
+      for (const item of products) {
+        const { productId, quantity } = item;
 
-// // Extract necessary fields
-// const shippingAddress = {
-//   fullName: shippingAddressDoc.fullName,
-//   phone: shippingAddressDoc.phone,
-//   state: shippingAddressDoc.state,
-//   city: shippingAddressDoc.city,
-//   pincode: shippingAddressDoc.pincode,
-//   address: shippingAddressDoc.address,
-//   landmark: shippingAddressDoc.landmark,
-//   country: shippingAddressDoc.country,
-// };
+        if (!mongoose.Types.ObjectId.isValid(productId) || !quantity || quantity <= 0) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid product ID or quantity",
+          });
+        }
 
-const shippingAddress = {
-  fullName: shippingAddressDoc.fullName,
-  phone: shippingAddressDoc.phone,
-  state: shippingAddressDoc.state,
-  city: shippingAddressDoc.city,
-  pincode: shippingAddressDoc.pincode,
-  address: shippingAddressDoc.address,
-  // landmark: shippingAddressDoc.landmark || "N/A", // <-- THIS MUST NOT BE MISSING
-  country: shippingAddressDoc.country,
-};
+        // Fetch product from DB
+        const product = await Product.findById(productId);
 
-     const order = new Order({
-  userId,
-  totalAmount: amountInPaise,
-  products: productIds,
-  shippingAddress,
-  paymentMethod: "Stripe", // Required field
-  orderStatus: "Processing",
-});
+        if (!product) {
+          return res.status(404).json({
+            success: false,
+            message: `Product not found: ${productId}`,
+          });
+        }
 
-    await order.save();
+        // Check if quantity is available
+        if (product.quantity < quantity) {
+          return res.status(400).json({
+            success: false,
+            message: `Not enough quantity for product: ${product.title}`,
+          });
+        }
+
+        // Deduct quantity
+        product.quantity -= quantity;
+        await product.save();
+
+        // Add to order list
+        orderedProducts.push({
+          product: product._id,
+          quantity,
+        });
+      }
+
+      const shippingAddressDoc = await addressmodel.findById(addressId);
+
+      if (!shippingAddressDoc) {
+        return res.status(404).json({ success: false, message: "Address not found" });
+      }
+
+      // // Extract necessary fields
+      // const shippingAddress = {
+      //   fullName: shippingAddressDoc.fullName,
+      //   phone: shippingAddressDoc.phone,
+      //   state: shippingAddressDoc.state,
+      //   city: shippingAddressDoc.city,
+      //   pincode: shippingAddressDoc.pincode,
+      //   address: shippingAddressDoc.address,
+      //   landmark: shippingAddressDoc.landmark,
+      //   country: shippingAddressDoc.country,
+      // };
+
+      const shippingAddress = {
+        fullName: shippingAddressDoc.fullName,
+        phone: shippingAddressDoc.phone,
+        state: shippingAddressDoc.state,
+        city: shippingAddressDoc.city,
+        pincode: shippingAddressDoc.pincode,
+        address: shippingAddressDoc.address,
+        // landmark: shippingAddressDoc.landmark || "N/A", // <-- THIS MUST NOT BE MISSING
+        country: shippingAddressDoc.country,
+      };
+
+      const order = new Order({
+        userId,
+        totalAmount: amountInPaise,
+        products: orderedProducts, // include quantity!
+        shippingAddress,
+        paymentMethod: "Stripe",
+        orderStatus: "Processing",
+      });
+      await order.save();
+
 
       return res.status(200).json({
         success: true,
@@ -227,16 +255,16 @@ exports.placeCodOrder = async (req, res) => {
     if (!addressDoc) {
       return res.status(404).json({ success: false, message: "Address not found" });
     }
-  console.log(addressDoc);
-  const shippingAddress = {
-  fullName: addressDoc.fullName,
-  phone: addressDoc.phone,
-  state: addressDoc.state,
-  city: addressDoc.city,
-  pincode: addressDoc.pincode,
-  address: addressDoc.address,
-  country: addressDoc.country, // this might be undefined
-};
+    console.log(addressDoc);
+    const shippingAddress = {
+      fullName: addressDoc.fullName,
+      phone: addressDoc.phone,
+      state: addressDoc.state,
+      city: addressDoc.city,
+      pincode: addressDoc.pincode,
+      address: addressDoc.address,
+      country: addressDoc.country, // this might be undefined
+    };
 
     const productIds = products.map(id => new mongoose.Types.ObjectId(id));
 
@@ -364,7 +392,7 @@ exports.placeCodOrder = async (req, res) => {
 //   }
 // };
 
- 
+
 // working properly 
 exports.fetchAllPayments = async (req, res) => {
   try {

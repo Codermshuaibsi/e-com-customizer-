@@ -5,13 +5,13 @@ const SubCategory = require("../models/productSubCategory");
 // create product
 exports.createProduct = async (req, res) => {
   try {
-    const { title, description, price, quantity, color, subCategoryId, brand, variant } = req.body;
+    const { title, description, price, quantity, color, subCategoryId, brand, variant, Tax } = req.body;
 
     const thumbnail = req.files.thumbnail;
 
     const userId = req.user.id;
 
-    if (!title || !description || !price || !thumbnail || !subCategoryId || !quantity || !color || !brand || !variant) {
+  if (!title || !description || !price || !thumbnail || !subCategoryId || !quantity || !color || !brand || !Tax) {
       return res.status(403).json({
         success: false,
         message: "all fields are required",
@@ -49,6 +49,7 @@ exports.createProduct = async (req, res) => {
       color,
       brand,
       variant,
+      Tax
     });
 
     // add course entry in Category => because us Category ke inside sare course aa jaye
@@ -252,7 +253,7 @@ exports.getProductById = async (req, res) => {
 
 exports.totalProduct = async (req, res) => {
   try {
-    const AllProduct = await Product.find({}).populate('brand').populate('subCategory').populate('variant');
+    const AllProduct = await Product.find({}).populate('brand').populate('subCategory').populate('variant').populate('Tax');
 
     return res.status(200).json({
       success: true,
