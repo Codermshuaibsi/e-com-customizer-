@@ -43,6 +43,8 @@ const variationRoutes = require("./routers/VariationRoutes");
 const unitRoutes = require("./routers/UnitRotes");
 const taxRoutes = require("./routers/TaxesRoute");
 const brandRoutes = require("./routers/BrandRoutes");
+const ColorRoutes = require('./routers/ColorRoutes');
+
 // Routes declaration
 app.use("/api/v1", user); 
 app.use("/api/v1", product);
@@ -57,6 +59,7 @@ app.use('/api/v1',variationRoutes);
 app.use('/api/v1', unitRoutes);
 app.use('/api/v1', brandRoutes);
 app.use('/api/v1', taxRoutes);
+app.use('/api/v1',ColorRoutes);
 
 
 // Start server

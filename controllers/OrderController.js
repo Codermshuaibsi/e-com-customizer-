@@ -50,7 +50,8 @@ const mongoose = require("mongoose");
 exports.fetchOrders = async (req, res) => {
   try {
     // Fetch all orders from the database
-    const orders = await Order.find().populate('products').populate('userId');
+   const orders = await Order.find().populate('products.productId').populate('userId');
+
     if (!orders || orders.length === 0) {
       return res.status(404).json({
         success: false,
@@ -114,7 +115,8 @@ exports.fetchSingleOrder = async (req, res) => {
 
     console.log(`Fetching order with ID: ${orderId}`);
 
-    const order = await Order.findById({ _id: orderId }).populate("products").populate('userId');
+   const order = await Order.findById(orderId).populate("products.productId").populate("userId");
+
 
     if (!order) {
       return res.status(404).json({
@@ -214,9 +216,10 @@ exports.fetchOrderHistory = async (req, res) => {
       });
     }
 
-    const orderHistory = await Order.find({ userId })
-      .populate("products")
-      .sort({ createdAt: -1 });
+const orderHistory = await Order.find({ userId })
+  .populate("products.productId") // ✅ instead of just .populate("products")
+  .sort({ createdAt: -1 });
+
 
     if (!orderHistory.length) {
       return res.status(404).json({
