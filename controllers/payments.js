@@ -262,7 +262,7 @@ exports.placeCodOrder = async (req, res) => {
     const newOrder = new Order({
       userId,
       products: formattedProducts,
-      totalAmount: amount * 100,
+      totalAmount: amount,
       shippingAddress,
       paymentMethod: "COD",
       paymentStatus: "Pending",
