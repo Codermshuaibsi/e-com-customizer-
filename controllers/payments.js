@@ -98,6 +98,9 @@ exports.capturePayment = async (req, res) => {
       message: "Payment intent created",
       clientSecret: paymentIntent.client_secret,
     });
+
+
+    res.send({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
     console.error("Capture Payment Error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -185,7 +188,7 @@ exports.verifyPayment = async (req, res) => {
 
     await order.save();
 
-       const populatedOrderItems = await Promise.all(
+    const populatedOrderItems = await Promise.all(
       orderItems.map(async (item) => {
         const product = await Product.findById(item.productId);
         return {
@@ -213,18 +216,18 @@ exports.verifyPayment = async (req, res) => {
       <h3>Order Details:</h3>
       <ul>
         ${populatedOrderItems
-          .map(
-            (item) =>
-              `<li>Product ID: ${item.name} - Quantity: ${item.quantity}</li>`
-          )
-          .join("")}
+        .map(
+          (item) =>
+            `<li>Product ID: ${item.name} - Quantity: ${item.quantity}</li>`
+        )
+        .join("")}
       </ul>
       <p><b>Shipping Address:</b> ${shippingAddress.address}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.pincode}</p>
       <p>Thank you for shopping with us!</p>
     `;
 
     await transporter.sendMail({
-      from:"amanpal6000@gmail.com",
+      from: "amanpal6000@gmail.com",
       to: user.email,
       subject: "Order Confirmation - Customizer",
       html: emailContent,
@@ -291,7 +294,7 @@ exports.placeCodOrder = async (req, res) => {
 
     await newOrder.save();
 
-     const user = await User.findById(userId);
+    const user = await User.findById(userId);
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
     // 🔴 FETCH PRODUCT DETAILS
@@ -315,7 +318,7 @@ exports.placeCodOrder = async (req, res) => {
     });
 
     const mailOptions = {
-      from:process.env.EMAIL_USER,
+      from: process.env.EMAIL_USER,
       to: user.email,
       subject: "Order Confirmation - Cash on Delivery",
       html: `
