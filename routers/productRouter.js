@@ -15,7 +15,7 @@ const {
   totalProduct,
   productQuantity,
   searchProduct
-} = require("../controllers/productController");     
+} = require("../controllers/productController");
 
 
 const {
@@ -54,38 +54,38 @@ router.get("/getProductById/:productId", getProductById);
 router.get("/fetchAllProducts", fetchAllProducts);
 
 router.post("/productQuantity/:productId", auth, isUser, productQuantity);
-  
-router.get("/search/product",searchProduct)
+
+router.get("/search/product", searchProduct)
 
 // ********************************************************************************************************
 //                                      product routes by using category
 // ********************************************************************************************************
 
-router.post("/createCategory", auth, isAdmin, createCategory);  
+router.post("/createCategory", auth, isAdmin, createCategory);
 
-router.delete("/deleteCategory/:categoryId", auth, isAdmin, deleteCategory); 
-  
-router.get("/showAllCategory", showAllCategory);   
+router.delete("/deleteCategory/:categoryId", auth, isAdmin, deleteCategory);
 
-router.get("/categoryPageDetails/:categoryId", fetchCategoryPageDetail); 
+router.get("/showAllCategory", showAllCategory);
 
-router.put("/updateCategory/:categoryId", auth, isAdmin, updateCategory);  
+router.get("/categoryPageDetails/:categoryId", fetchCategoryPageDetail);
 
-router.get("/getProductsByCategoryId/:categoryId", getProductsByCategoryId);  
+router.put("/updateCategory/:categoryId", auth, isAdmin, updateCategory);
+
+router.get("/getProductsByCategoryId/:categoryId", getProductsByCategoryId);
 
 // ********************************************************************************************************
 //                                      product routes by using sub category
 // ********************************************************************************************************
 
-router.post("/createSubCategory", auth, isAdmin, createSubCategory);  
+router.post("/createSubCategory", auth, isAdmin, createSubCategory);
 
-router.get("/fetchAllSubCategoryOfCategory/:categoryId",fetchAllSubCategoryOfCategory); 
+router.get("/fetchAllSubCategoryOfCategory/:categoryId", fetchAllSubCategoryOfCategory);
 
-router.get("/subCategoryPageDetails/:subCategoryId", subCategoryPageDetails);   
+router.get("/subCategoryPageDetails/:subCategoryId", subCategoryPageDetails);
 
-router.delete("/deleteSubCategory/:subCategoryId", deleteSubCategory); 
+router.delete("/deleteSubCategory/:subCategoryId", auth, isAdmin, deleteSubCategory);
 
-router.put("/updateSubCategory/:subCategoryId", updateSubCategory);  
+router.put("/updateSubCategory/:subCategoryId", auth, isAdmin, updateSubCategory);
 
 
 
