@@ -99,8 +99,6 @@ exports.capturePayment = async (req, res) => {
       clientSecret: paymentIntent.client_secret,
     });
 
-
-    res.send({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
     console.error("Capture Payment Error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
