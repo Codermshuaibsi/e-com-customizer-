@@ -1,4 +1,6 @@
 const Newsletter = require('../models/NewsletterModel');
+const sendEmail = require('../utils/Send_Email');
+
 // 👉 Public: User subscribes
 exports.subscribe = async (req, res) => {
   const { email } = req.body;
@@ -15,6 +17,8 @@ exports.subscribe = async (req, res) => {
 
     await Newsletter.create({ email });
     res.status(201).json({ success: true, message: "Subscribed successfully." });
+
+    await sendEmail(user.email, "KDS", html);
   } catch (err) {
     res.status(500).json({ success: false, message: "Server error" });
   }

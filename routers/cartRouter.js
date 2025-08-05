@@ -20,7 +20,7 @@ router.get("/fetchAllCartItems", auth, isUser, fetchAllCartItem)
 
 router.get("/AllCartItems/:id", fetchAllCartItem)
 
-router.post("/addToCart/:productId", auth, isUser, addToCart)
+router.post("/addToCart/:productId", addToCart)
 
 router.post('/removeFromCart/:productId', auth, isUser, removeFromCart);
 
