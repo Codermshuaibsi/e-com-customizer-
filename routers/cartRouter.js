@@ -16,30 +16,30 @@ const { auth, isUser } = require("../middleware/auth");
 //                                      cart routes
 // ********************************************************************************************************
 
-router.get("/fetchAllCartItems", auth, isUser, fetchAllCartItem)
+router.get("/fetchAllCartItems", fetchAllCartItem)
 
 router.get("/AllCartItems/:id", fetchAllCartItem)
 
 router.post("/addToCart/:productId", addToCart)
 
-router.post('/removeFromCart/:productId', auth, isUser, removeFromCart);
+router.post('/removeFromCart/:productId',  removeFromCart);
 
-router.post('/removeAllFromCart', auth, isUser, removeAllFromCart);
+router.post('/removeAllFromCart',  removeAllFromCart);
 
-router.put('/updateCartQuantity/:productId', auth, isUser, updateCartQuantity);
+router.put('/updateCartQuantity/:productId',  updateCartQuantity);
 
 
 // ***************************************************************************************
 //                                     wishlist routes
 //***************************************************************************************
 
-router.post('/addToWishlist/:productId', auth, isUser, addToWishlist);
+router.post('/addToWishlist/:productId',  addToWishlist);
 
-router.delete("/removeFromWishlist/:productId", auth, isUser, removeFromWishlist);
+router.delete("/removeFromWishlist/:productId",  removeFromWishlist);
 
-router.get("/fetchAllWishlistItem", auth, isUser, fetchAllWishlistItem);
+router.get("/fetchAllWishlistItem", fetchAllWishlistItem);
 
-router.delete("/removeAllWislist", auth, isUser, removeAllWislist);
+router.delete("/removeAllWislist",  removeAllWislist);
 
 
 module.exports = router;  
