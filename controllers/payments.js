@@ -5,7 +5,6 @@ const crypto = require("crypto");
 const mongoose = require("mongoose");
 const Payment = require("../models/paymentModel");
 const Order = require("../models/orderModel");
-// const shippingAddress1 = require("../models/ShippingAddress");
 const addressmodel = require("../models/ShippingAddress ");
 const nodemailer = require("nodemailer");
 
@@ -83,15 +82,6 @@ exports.capturePayment = async (req, res) => {
       },
       automatic_payment_methods: { enabled: true },
     });
-
-    // const order = new Order({
-    //   userId,
-    //   totalAmount: amountInPaise,
-    //   products: productIds,
-    //   shippingAddress,
-    // });
-
-    // await order.save();
 
     res.status(200).json({
       success: true,
