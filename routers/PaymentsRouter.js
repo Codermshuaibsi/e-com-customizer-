@@ -6,11 +6,11 @@ const { capturePayment, verifyPayment, fetchAllPayments, placeCodOrder } = requi
 
 const {auth , isUser, isAdmin} = require("../middleware/auth")
 
-router.post("/checkout", auth, isUser, capturePayment)  
+router.post("/checkout", auth, capturePayment)  
 
-router.post("/verifySignature"  ,auth ,isUser , verifyPayment);
+router.post("/verifySignature"  ,auth  , verifyPayment);
 
-router.post("/cod-order", auth,isUser, placeCodOrder );
+router.post("/cod-order", auth, placeCodOrder );
 
 router.get("/fetchAllPayments" ,auth , isAdmin , fetchAllPayments)
 
