@@ -259,7 +259,8 @@ exports.updateCartQuantity = async (req, res) => {
     }
 
 
-    cartItem.quantity += quantity;
+    cartItem.quantity = quantity;
+
 
     await product.save();
 
