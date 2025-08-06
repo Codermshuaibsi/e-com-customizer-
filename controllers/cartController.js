@@ -251,14 +251,16 @@ exports.updateCartQuantity = async (req, res) => {
       });
     }
 
-    if (quantity < 1 || quantity > product.quantity) {
+    if (quantity < 1 || cartItem.quantity > product.quantity) {
       return res.status(400).json({
         success: false,
-        message: `Quantity must be between 1 and ${product.quantity}`,
+        message: `Total quantity must be between 1 and ${product.quantity}`,
       });
     }
 
-    cartItem.quantity = quantity;
+
+    cartItem.quantity += quantity;
+
     await product.save();
 
     res.status(200).json({

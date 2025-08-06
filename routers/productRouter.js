@@ -55,7 +55,7 @@ router.get("/fetchAllProducts", fetchAllProducts);
 
 router.post("/productQuantity/:productId", auth, isUser, productQuantity);
 
-router.get("/search/product", searchProduct)
+router.get("/search/product/", searchProduct)
 
 // ********************************************************************************************************
 //                                      product routes by using category
