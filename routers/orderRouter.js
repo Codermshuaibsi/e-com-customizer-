@@ -30,7 +30,7 @@ router.put("/ordersStatus/:orderId",auth,isAdmin, updateOrder);
 
 router.delete("/orders/:orderId", deleteOrder); 
 
-router.get("/getOrderHistory", auth, isUser, fetchOrderHistory);   
+router.get("/getOrderHistory", auth, fetchOrderHistory);   
 
 // total revenue
 router.get("/getDashboardStat",auth,isAdmin,getDashboardStats)
