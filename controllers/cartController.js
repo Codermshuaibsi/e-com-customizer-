@@ -251,16 +251,30 @@ exports.updateCartQuantity = async (req, res) => {
       });
     }
 
-    if (quantity < 1 || cartItem.quantity > product.quantity) {
+    // Validate quantity
+    if (quantity < 1) {
       return res.status(400).json({
         success: false,
-        message: `Total quantity must be between 1 and ${product.quantity}`,
+        message: "Quantity must be at least 1",
       });
     }
 
+    // Calculate available stock (current stock + user's current cart quantity)
+    const availableStock = product.quantity + cartItem.quantity;
+    
+    if (quantity > availableStock) {
+      return res.status(400).json({
+        success: false,
+        message: `Only ${availableStock} items available. Please reduce quantity.`,
+      });
+    }
 
+    // Update the product quantity based on the difference
+    const quantityDifference = quantity - cartItem.quantity;
+    product.quantity -= quantityDifference;
+
+    // Update cart item quantity
     cartItem.quantity = quantity;
-
 
     await product.save();
 
@@ -275,4 +289,4 @@ exports.updateCartQuantity = async (req, res) => {
       message: "Internal server error while updating cart quantity",
     });
   }
-}
+};
