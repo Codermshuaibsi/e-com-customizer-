@@ -1,52 +1,45 @@
 // Import the required modules
-const express = require("express")
+const express = require("express");
 const router = express.Router();
 
-// Import the required controllers and middleware functions
+// Import controllers
 const {
     fetchAllCartItem, addToCart, removeFromCart, removeAllFromCart, updateCartQuantity
 } = require("../controllers/cartController");
 
+const {
+    addToWishlist, removeFromWishlist, fetchAllWishlistItem, removeAllWislist,
+} = require("../controllers/wishlistController");
 
-const { addToWishlist, removeFromWishlist, fetchAllWishlistItem, removeAllWislist, } = require("../controllers/wishlistController");
-
-const { auth, isUser } = require("../middleware/auth");
+const { auth, isUser, isAdmin } = require("../middleware/auth");
 
 // ********************************************************************************************************
-//                                      cart routes
-// ********************************************************************************************************
-// ********************************************************************************************************
-//                                      cart routes
+//                                      Cart Routes
 // ********************************************************************************************************
 
-router.get("/fetchAllCartItems", auth, fetchAllCartItem); // ✅ Needs user context
+// ✅ User-only access (must be logged in)
+router.get("/fetchAllCartItems", auth, isUser, fetchAllCartItem);
 
-router.get("/AllCartItems/:id", auth, fetchAllCartItem);  // ✅ If you use params, still protect it
+router.get("/AllCartItems/:id", auth, isUser, fetchAllCartItem);  // ✅ Only allow if user owns the cart or if admin
 
-router.post("/addToCart/:productId", auth, addToCart); // ✅ Critical
+router.post("/addToCart/:productId", auth, isUser, addToCart);
 
-router.post("/removeFromCart/:productId", auth, removeFromCart);
+router.post("/removeFromCart/:productId", auth, isUser, removeFromCart);
 
-router.post("/removeAllFromCart", auth, removeAllFromCart);
+router.post("/removeAllFromCart", auth, isUser, removeAllFromCart);
 
-router.put("/updateCartQuantity/:productId", auth, updateCartQuantity);
+router.put("/updateCartQuantity/:productId", auth, isUser, updateCartQuantity);
 
+// ********************************************************************************************************
+//                                      Wishlist Routes
+// ********************************************************************************************************
 
-// ***************************************************************************************
-//                                     wishlist routes
-//***************************************************************************************
+router.post("/addToWishlist/:productId", auth, isUser, addToWishlist);
 
-// ***************************************************************************************
-//                                     wishlist routes
-// ***************************************************************************************
+router.delete("/removeFromWishlist/:productId", auth, isUser, removeFromWishlist);
 
-router.post("/addToWishlist/:productId", auth, addToWishlist);
+router.get("/fetchAllWishlistItem", auth, isUser, fetchAllWishlistItem);
 
-router.delete("/removeFromWishlist/:productId", auth, removeFromWishlist);
+router.delete("/removeAllWislist", auth, isUser, removeAllWislist);
 
-router.get("/fetchAllWishlistItem", auth, fetchAllWishlistItem);
-
-router.delete("/removeAllWislist", auth, removeAllWislist);
-
-
-module.exports = router;  
+module.exports = router;

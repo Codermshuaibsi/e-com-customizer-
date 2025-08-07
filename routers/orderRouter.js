@@ -11,29 +11,32 @@ const {
   getDashboardStats
 } = require("../controllers/OrderController");
 
-
-
 const { isAdmin, isUser, auth } = require("../middleware/auth");
 
-/** http://localhost:4000/api/v1/orders/..... */
+/** http://localhost:4000/api/v1/orders/... */
 
-router.post("/orders/add-order", createOrder);
+// ✅ Any logged-in user can create an order
+router.post("/orders/add-order", auth, isUser, createOrder);
 
-router.get("/orders/orderHistory", auth, fetchOrderHistory);
+// ✅ Order history for logged-in users
+router.get("/orders/orderHistory", auth, isUser, fetchOrderHistory);
 
-router.get("/orders/all-orders", fetchOrders)
+// ✅ Admin only: Get all orders
+router.get("/orders/all-orders", auth, isAdmin, fetchOrders);
 
+// ✅ Admin only: Get a single order by ID
+router.get("/orders/:orderId", auth, isAdmin, fetchSingleOrder);
 
-router.get("/orders/:orderId", fetchSingleOrder);
+// ✅ Admin only: Update order status
+router.put("/ordersStatus/:orderId", auth, isAdmin, updateOrder);
 
-router.put("/ordersStatus/:orderId",auth,isAdmin, updateOrder);
+// ✅ Admin only: Delete an order
+router.delete("/orders/:orderId", auth, isAdmin, deleteOrder);
 
-router.delete("/orders/:orderId", deleteOrder); 
+// ✅ Duplicate route for order history — either remove or keep one
+router.get("/getOrderHistory", auth, isUser, fetchOrderHistory);
 
-router.get("/getOrderHistory", auth, fetchOrderHistory);   
-
-// total revenue
-router.get("/getDashboardStat",auth,isAdmin,getDashboardStats)
-
+// ✅ Admin only: Dashboard statistics
+router.get("/getDashboardStat", auth, isAdmin, getDashboardStats);
 
 module.exports = router;

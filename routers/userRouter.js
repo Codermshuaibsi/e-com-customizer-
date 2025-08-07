@@ -1,8 +1,6 @@
-// Import the required modules
 const express = require("express");
 const router = express.Router();
 
-// Import the required controllers and middleware functions
 const {
   login,
   signUp,
@@ -23,51 +21,34 @@ const {
 
 const { auth, isAdmin, isUser } = require("../middleware/auth");
 
-// Routes for Login, Signup, and Authentication
-
 // ********************************************************************************************************
 //                                      Authentication routes
 // ********************************************************************************************************
 
-// Route for user login
+// Public Routes
 router.post("/login", login); 
-
 router.post("/adminLogin", adminLogin);
-
-// Route for user signup
 router.post("/signup", signUp);
-
-router.post("/LoginWithGoogle", LoginWithGoogle)
-
-router.get("/getAllUsers", auth, isAdmin, getAllUsers);
-
-router.get("/getAllAdmin", auth, isAdmin, getAllAdmins)
-
-router.get("/getAdminById/:id", auth, isAdmin, getAdminById)
-
-router.put("/updateprofile/:id",auth ,updateprofile)
-
- router.put("/updateDetails", auth, updateUser);
-
-router.put("/updateDetails/:id", auth, updateUser);
-
-
-router.put("/updateAddress", auth, updateAddress);
-
-router.delete("/deleteUser", auth, deleteUser); 
-
-router.delete("/deleteUser/:id", auth, deleteUser);
-
-
-router.get("/getUserDetail", auth, getUserDetails);
-
-router.get("/getUser",auth, getUserDetails);
-
+router.post("/LoginWithGoogle", LoginWithGoogle);
 router.post("/sendMail", sendConnectMail);
+router.post("/lostPassword", lostPasswordController);
 
-router.post("/lostPassword", lostPasswordController)
+// Admin Only Routes
+router.get("/getAllUsers", auth, isAdmin, getAllUsers);
+router.get("/getAllAdmin", auth, isAdmin, getAllAdmins);
+router.get("/getAdminById/:id", auth, isAdmin, getAdminById);
+router.put("/updateDetails/:id", auth, isAdmin, updateUser);
+router.delete("/deleteUser/:id", auth, isAdmin, deleteUser);
 
-router.put("/change-password", auth, changePassword);
+// User Routes (Must be authenticated as user)
+router.put("/updateDetails", auth, isUser, updateUser);
+router.put("/updateAddress", auth, isUser, updateAddress);
+router.delete("/deleteUser", auth, isUser, deleteUser);
+router.get("/getUserDetail", auth, isUser, getUserDetails);
+router.get("/getUser", auth, isUser, getUserDetails);
+router.put("/change-password", auth, isUser, changePassword);
 
+// Mixed Role Access (Authenticated user or admin updating their own profile)
+router.put("/updateprofile/:id", auth, updateprofile);
 
 module.exports = router;

@@ -6,45 +6,6 @@ const mongoose = require("mongoose");
 
 
 
-// exports.fetchOrderHistory = async (req, res) => {
-//   try {
-//     const userId = req.user.id;
-//     console.log(userId);
-
-//     if (!ObjectId.isValid(userId)) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid user ID",
-//       });
-//     }
-
-//     const userObj = new ObjectId(userId);
-
-//     const orderHistory = await Order.find({ userId: userObj }).populate(
-//       "products"
-//     );
-
-
-//     if (orderHistory.length === 0) {
-//       return res.status(403).json({
-//         success: false,
-//         message: "No order history found",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Successfuly found the order histroy",
-//       orderHistory,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal server error",
-//     });
-//   }
-// };
 
 
 exports.fetchOrders = async (req, res) => {
@@ -80,24 +41,32 @@ exports.createOrder = async (req, res) => {
     const { userId, products, totalAmount, shippingAddress, orderStatus } = req.body;
 
     if (!userId || !products || !totalAmount || !shippingAddress) {
-      return res
-        .status(400)
-        .json({ success: false, message: "All fields are required" });
+      return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
-    // create the order
+    // Get the last order to determine the next orderId
+    const lastOrder = await Order.findOne().sort({ createdAt: -1 });
+
+    let newOrderId = "DT-001";
+    if (lastOrder && lastOrder.orderId) {
+      const lastOrderNumber = parseInt(lastOrder.orderId.split("-")[1]);
+      const nextOrderNumber = lastOrderNumber + 1;
+      newOrderId = `DT-${String(nextOrderNumber).padStart(3, "0")}`;
+    }
+
+    // Create the new order with generated orderId
     const newOrder = await Order.create({
+      orderId: newOrderId,
       userId,
       products,
       totalAmount,
       shippingAddress,
       orderStatus: orderStatus || "Pending",
-
     });
 
     return res.status(201).json({
       success: true,
-      message: "Order created succesfully",
+      message: "Order created successfully",
       order: newOrder,
     });
   } catch (error) {
@@ -108,6 +77,7 @@ exports.createOrder = async (req, res) => {
     });
   }
 };
+
 
 exports.fetchSingleOrder = async (req, res) => {
   try {
