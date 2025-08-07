@@ -32,7 +32,7 @@ exports.createCategory = async (req, res) => {
 
 
     // create entry in db
-    const categoryDetails = await Category.create({ title ,images: image.secure_url});
+    const categoryDetails = await Category.create({ title ,thumbnail: image.secure_url});
 
 
 
@@ -55,7 +55,7 @@ exports.createCategory = async (req, res) => {
 exports.showAllCategory = async (req, res) => {
   try {
 
-    const allCategory = await Category.find({}, { title: true, images: true, subCategory: true })
+    const allCategory = await Category.find({}, { title: true, thumbnail: true, subCategory: true })
     .populate({
         path: "subCategory",
         populate: {

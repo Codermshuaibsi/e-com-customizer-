@@ -39,7 +39,7 @@ exports.createSubCategory = async (req, res) => {
     // create entry in db of sub category
     const subCategoryDetails = await SubCategory.create({
       title,
-      images: image.secure_url,
+      thumbnail: image.secure_url,
     });
 
     //  update in the category also
@@ -228,7 +228,7 @@ exports.updateSubCategory = async (req, res) => {
         1000
       );
 
-      subCategoryDetails.images = imageDetail.secure_url;
+      subCategoryDetails.thumbnail = imageDetail.secure_url;
     }
 
     await subCategoryDetails.save();

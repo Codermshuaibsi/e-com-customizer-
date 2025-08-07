@@ -7,11 +7,11 @@ exports.createProduct = async (req, res) => {
   try {
     const { title, description, price, quantity, color, subCategoryId, brand, variant } = req.body;
 
-    const images = req.files.images;
+    const thumbnail = req.files.thumbnail;
 
     const userId = req.user.id;
 
-    if (!title || !description || !price || !images || !subCategoryId || !quantity || !color || !brand || !variant) {
+    if (!title || !description || !price || !thumbnail || !subCategoryId || !quantity || !color || !brand || !variant) {
       return res.status(403).json({
         success: false,
         message: "all fields are required",
@@ -30,19 +30,33 @@ exports.createProduct = async (req, res) => {
       });
     }
 
-    // upload to cloudinary
-    const image = await uploadToCloudinary(
-      images,
-      process.env.FOLDER_NAME,
-      1000,
-      1000
-    );
+    // upload to cloudinary (support multiple thumbnail)
+    let imageUrls = [];
+    if (Array.isArray(thumbnail)) {
+      for (const img of thumbnail) {
+        const uploaded = await uploadToCloudinary(
+          img,
+          process.env.FOLDER_NAME,
+          1000,
+          1000
+        );
+        imageUrls.push(uploaded.secure_url);
+      }
+    } else {
+      const uploaded = await uploadToCloudinary(
+        thumbnail,
+        process.env.FOLDER_NAME,
+        1000,
+        1000
+      );
+      imageUrls.push(uploaded.secure_url);
+    }
 
     const product = await Product.create({
       title,
       description,
       price,
-      thumbnail: image.secure_url,
+      thumbnail: imageUrls,
       postedBy: userId,
       subCategory: subCategoryDetails._id,
       quantity,
@@ -85,7 +99,7 @@ exports.updateProduct = async (req, res) => {
 
     const { productId } = req.params;
 
-    if (!title || !description || !price || !thumbnail || !quantity || !color) {
+    if (!title || !description || !price || !quantity || !color) {
       return res.status(403).json({
         success: false,
         message: "all fields are required",
@@ -129,15 +143,28 @@ exports.updateProduct = async (req, res) => {
     }
 
     if (thumbnail) {
-      // upload to cloudinary
-      const image = await uploadToCloudinary(
-        thumbnail,
-        process.env.FOLDER_NAME,
-        1000,
-        1000
-      );
-
-      productDetails.thumbnail = image.secure_url;
+      // upload to cloudinary (support multiple thumbnail)
+      let imageUrls = [];
+      if (Array.isArray(thumbnail)) {
+        for (const img of thumbnail) {
+          const uploaded = await uploadToCloudinary(
+            img,
+            process.env.FOLDER_NAME,
+            1000,
+            1000
+          );
+          imageUrls.push(uploaded.secure_url);
+        }
+      } else {
+        const uploaded = await uploadToCloudinary(
+          thumbnail,
+          process.env.FOLDER_NAME,
+          1000,
+          1000
+        );
+        imageUrls.push(uploaded.secure_url);
+      }
+      productDetails.thumbnail = imageUrls;
     }
 
     await productDetails.save();

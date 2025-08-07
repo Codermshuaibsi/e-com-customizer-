@@ -5,7 +5,7 @@ const subCategorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  images: {
+  thumbnail: {
     type: String,
   },
   products: [
