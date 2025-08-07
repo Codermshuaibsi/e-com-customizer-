@@ -4,10 +4,12 @@ const productSchema = new mongoose.Schema({
   title: {
     type: String,
     trim: true,
+    required: true,
   },
   description: {
     type: String,
     trim: true,
+    required: true,
   },
   postedBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -22,15 +24,12 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  thumbnail: [
+  images: [
     {
       type: String,
+      default: ""
     },
   ],
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
   cart: [
     {
       userId: {
@@ -51,8 +50,8 @@ const productSchema = new mongoose.Schema({
   },
   color: {
     type: String,
-    require: true,
-
+    required: true,
+    trim: true,
   },
   brand: {
     type: mongoose.Schema.Types.ObjectId,
@@ -72,13 +71,13 @@ const productSchema = new mongoose.Schema({
   ],
   subCategory: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "subCategory",
+    ref: "SubCategory",
   },
   isCustom: {
     type: Boolean,
     default: false
   }
-});
+}, { timestamps: true });
 
 const Product = mongoose.model("Product", productSchema);
-module.exports = Product;  
+module.exports = Product;

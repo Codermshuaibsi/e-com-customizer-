@@ -6,11 +6,8 @@ const newsletterSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-  },
-  subscribedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+    trim: true,
+  }
+}, { timestamps: true });
 
 module.exports = mongoose.model("Newsletter", newsletterSchema);

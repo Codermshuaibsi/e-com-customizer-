@@ -24,16 +24,11 @@ const brandSchema = new mongoose.Schema({
             type: String,
             default: ""
         },
-
         keywords: {
             type: [String],
             default: []
         }
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
     }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("Brand", brandSchema);

@@ -3,12 +3,19 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
+    trim: true,
+    required: true,
   },
   lastName: {
     type: String,
+    trim: true,
+    required: true,
   },
   email: {
     type: String,
+    trim: true,
+    required: true,
+    unique: true,
   },
   phoneNumber: {
     type: Number,
@@ -16,6 +23,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     trim: true,
+    required: true,
   },
   role: {
     type: String,
@@ -26,7 +34,6 @@ const userSchema = new mongoose.Schema({
     country: {
       type: String,
     },
-
     state: {
       type: String,
     },
@@ -42,14 +49,13 @@ const userSchema = new mongoose.Schema({
   }],
   favouriteGame: {
     type: String,
-    require: true
+    required: true
   },
-   thumbnail: {
+  thumbnail: {
     type: String, 
     default: "", 
   },
-  
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);
-module.exports = User; 
+module.exports = User;

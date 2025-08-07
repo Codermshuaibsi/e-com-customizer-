@@ -9,12 +9,8 @@ const taxSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     default: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  }
+}, { timestamps: true });
 
 const Tax = mongoose.model("Tax", taxSchema);
 module.exports = Tax;

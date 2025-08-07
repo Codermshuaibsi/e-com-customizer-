@@ -9,12 +9,8 @@ const unitSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     default: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  }
+}, { timestamps: true });
 
 const Unit = mongoose.model("Unit", unitSchema);
 module.exports = Unit;

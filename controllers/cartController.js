@@ -174,7 +174,7 @@ exports.fetchAllCartItem = async (req, res) => {
         title: product.title,
         price: product.price,
         quantity: userCartEntry.quantity,
-        thumbnail: product.thumbnail,
+        images: product.images,
       };
     });
 

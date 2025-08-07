@@ -9,12 +9,8 @@ const variationSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     default: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  }
+}, { timestamps: true });
 
 const Variation = mongoose.model("Variation", variationSchema);
 module.exports = Variation;

@@ -7,11 +7,11 @@ exports.createProduct = async (req, res) => {
   try {
     const { title, description, price, quantity, color, subCategoryId, brand, variant } = req.body;
 
-    const thumbnail = req.files.thumbnail;
+    const images = req.files.images;
 
     const userId = req.user.id;
 
-    if (!title || !description || !price || !thumbnail || !subCategoryId || !quantity || !color || !brand || !variant) {
+    if (!title || !description || !price || !images || !subCategoryId || !quantity || !color || !brand || !variant) {
       return res.status(403).json({
         success: false,
         message: "all fields are required",
@@ -30,10 +30,10 @@ exports.createProduct = async (req, res) => {
       });
     }
 
-    // upload to cloudinary (support multiple thumbnail)
+    // upload to cloudinary (support multiple images)
     let imageUrls = [];
-    if (Array.isArray(thumbnail)) {
-      for (const img of thumbnail) {
+    if (Array.isArray(images)) {
+      for (const img of images) {
         const uploaded = await uploadToCloudinary(
           img,
           process.env.FOLDER_NAME,
@@ -44,7 +44,7 @@ exports.createProduct = async (req, res) => {
       }
     } else {
       const uploaded = await uploadToCloudinary(
-        thumbnail,
+        images,
         process.env.FOLDER_NAME,
         1000,
         1000
@@ -56,7 +56,7 @@ exports.createProduct = async (req, res) => {
       title,
       description,
       price,
-      thumbnail: imageUrls,
+      images: imageUrls,
       postedBy: userId,
       subCategory: subCategoryDetails._id,
       quantity,
@@ -95,7 +95,7 @@ exports.updateProduct = async (req, res) => {
   try {
     const { title, description, price, quantity, color } = req.body;
 
-    const thumbnail = req.files?.thumbnail;
+    const images = req.files?.images;
 
     const { productId } = req.params;
 
@@ -142,11 +142,11 @@ exports.updateProduct = async (req, res) => {
       productDetails.color = color;
     }
 
-    if (thumbnail) {
-      // upload to cloudinary (support multiple thumbnail)
+    if (images) {
+      // upload to cloudinary (support multiple images)
       let imageUrls = [];
-      if (Array.isArray(thumbnail)) {
-        for (const img of thumbnail) {
+      if (Array.isArray(images)) {
+        for (const img of images) {
           const uploaded = await uploadToCloudinary(
             img,
             process.env.FOLDER_NAME,
@@ -157,14 +157,14 @@ exports.updateProduct = async (req, res) => {
         }
       } else {
         const uploaded = await uploadToCloudinary(
-          thumbnail,
+          images,
           process.env.FOLDER_NAME,
           1000,
           1000
         );
         imageUrls.push(uploaded.secure_url);
       }
-      productDetails.thumbnail = imageUrls;
+      productDetails.images = imageUrls;
     }
 
     await productDetails.save();

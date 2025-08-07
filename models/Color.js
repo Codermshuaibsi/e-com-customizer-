@@ -5,15 +5,12 @@ const ColorSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+        trim: true,
     },
     active: {
         type: Boolean,
         default: true,
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-})
+    }
+}, { timestamps: true });
 
 module.exports = mongoose.model("Color", ColorSchema)
