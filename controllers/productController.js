@@ -5,18 +5,23 @@ const SubCategory = require("../models/productSubCategory");
 // create product
 exports.createProduct = async (req, res) => {
   try {
+
     const { title, description, price, quantity, color, subCategoryId, brand, variant } = req.body;
-
-    const thumbnail = req.files.thumbnail;
-
+    // Expecting images to be uploaded as req.files.images (array of files)
+    // Fallback: if only one image, it may not be an array
+    let images = req.files?.images;
+    if (!Array.isArray(images) && images) {
+      images = [images];
+    }
     const userId = req.user.id;
 
-    if (!title || !description || !price || !thumbnail || !subCategoryId || !quantity || !color || !brand || !variant) {
+    if (!title || !description || !price || !images || images.length < 3 || !subCategoryId || !quantity || !color || !brand || !variant) {
       return res.status(403).json({
         success: false,
-        message: "all fields are required",
+        message: "All fields are required and at least 3 images (front, back, side) must be uploaded.",
       });
     }
+
 
     //   see the category is valid or not
     const subCategoryDetails = await SubCategory.findOne({
@@ -30,19 +35,33 @@ exports.createProduct = async (req, res) => {
       });
     }
 
-    // upload to cloudinary
-    const image = await uploadToCloudinary(
-      thumbnail,
-      process.env.FOLDER_NAME,
-      1000,
-      1000
-    );
+    // upload all images to cloudinary
+    const uploadedImages = [];
+    for (const img of images) {
+      const uploaded = await uploadToCloudinary(
+        img,
+        process.env.FOLDER_NAME,
+        1000,
+        1000
+      );
+      if (uploaded && uploaded.secure_url) {
+        uploadedImages.push(uploaded.secure_url);
+      }
+    }
+
+    if (uploadedImages.length < 3) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to upload all images. Please try again.",
+      });
+    }
 
     const product = await Product.create({
       title,
       description,
       price,
-      thumbnail: image.secure_url,
+      images: uploadedImages, // store all image URLs
+      thumbnail: uploadedImages[0], // use first image as thumbnail
       postedBy: userId,
       subCategory: subCategoryDetails._id,
       quantity,
