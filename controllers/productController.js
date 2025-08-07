@@ -7,18 +7,18 @@ exports.createProduct = async (req, res) => {
   try {
 
     const { title, description, price, quantity, color, subCategoryId, brand, variant } = req.body;
-    // Expecting images to be uploaded as req.files.images (array of files)
+    // Expecting thumbnail to be uploaded as req.files.thumbnail (array of files)
     // Fallback: if only one image, it may not be an array
-    let images = req.files?.images;
-    if (!Array.isArray(images) && images) {
-      images = [images];
+    let thumbnail = req.files?.thumbnail;
+    if (!Array.isArray(thumbnail) && thumbnail) {
+      thumbnail = [thumbnail];
     }
     const userId = req.user.id;
 
-    if (!title || !description || !price || !images || images.length < 3 || !subCategoryId || !quantity || !color || !brand || !variant) {
+    if (!title || !description || !price || !thumbnail || thumbnail.length < 3 || !subCategoryId || !quantity || !color || !brand || !variant) {
       return res.status(403).json({
         success: false,
-        message: "All fields are required and at least 3 images (front, back, side) must be uploaded.",
+        message: "All fields are required and at least 3 thumbnail (front, back, side) must be uploaded.",
       });
     }
 
@@ -35,9 +35,9 @@ exports.createProduct = async (req, res) => {
       });
     }
 
-    // upload all images to cloudinary
-    const uploadedImages = [];
-    for (const img of images) {
+    // upload all thumbnail to cloudinary
+    const uploadedthumbnail = [];
+    for (const img of thumbnail) {
       const uploaded = await uploadToCloudinary(
         img,
         process.env.FOLDER_NAME,
@@ -45,14 +45,14 @@ exports.createProduct = async (req, res) => {
         1000
       );
       if (uploaded && uploaded.secure_url) {
-        uploadedImages.push(uploaded.secure_url);
+        uploadedthumbnail.push(uploaded.secure_url);
       }
     }
 
-    if (uploadedImages.length < 3) {
+    if (uploadedthumbnail.length < 3) {
       return res.status(500).json({
         success: false,
-        message: "Failed to upload all images. Please try again.",
+        message: "Failed to upload all thumbnail. Please try again.",
       });
     }
 
@@ -60,8 +60,8 @@ exports.createProduct = async (req, res) => {
       title,
       description,
       price,
-      images: uploadedImages, // store all image URLs
-      thumbnail: uploadedImages[0], // use first image as thumbnail
+      thumbnail: uploadedthumbnail, // store all image URLs
+      thumbnail: uploadedthumbnail[0], // use first image as thumbnail
       postedBy: userId,
       subCategory: subCategoryDetails._id,
       quantity,
