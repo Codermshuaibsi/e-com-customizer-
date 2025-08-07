@@ -43,26 +43,32 @@ const User = require("../models/userModel");
 // };
 
 // auth 
+
 exports.auth = (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
-        message: "No token, authorization denied"
+        success: false,
+        message: "No token provided or malformed authorization header",
       });
     }
+
+    const token = authHeader.split(" ")[1];
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({
-      message: "Token is not valid plese check",
-      error: error.message
+    return res.status(401).json({
+      success: false,
+      message: "Invalid token",
+      error: error.message,
     });
   }
 };
+
 
 
 exports.isAuth = async (req, res, next) => {
@@ -121,14 +127,12 @@ exports.isUser = async (req, res, next) => {
   }
 };
 
-// isAdmin
-
-exports.isAdmin = async (req, res, next) => {
+exports.isAdmin = (req, res, next) => {
   try {
-    if (req.user.role !== "Admin") {
-      return res.status(401).json({
+    if (!req.user || req.user.role !== "Admin") {
+      return res.status(403).json({
         success: false,
-        message: `this is protected route for Admin only`,
+        message: "Access denied: Admins only",
       });
     }
 
@@ -136,7 +140,8 @@ exports.isAdmin = async (req, res, next) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: ` user role cannot be verified , please try again `,
+      message: "Unable to verify admin access",
+      error: error.message,
     });
   }
 };
