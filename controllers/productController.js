@@ -5,23 +5,18 @@ const SubCategory = require("../models/productSubCategory");
 // create product
 exports.createProduct = async (req, res) => {
   try {
-
     const { title, description, price, quantity, color, subCategoryId, brand, variant } = req.body;
-    // Expecting thumbnail to be uploaded as req.files.thumbnail (array of files)
-    // Fallback: if only one image, it may not be an array
-    let thumbnail = req.files?.thumbnail;
-    if (!Array.isArray(thumbnail) && thumbnail) {
-      thumbnail = [thumbnail];
-    }
+
+    const images = req.files.images;
+
     const userId = req.user.id;
 
-    if (!title || !description || !price || !thumbnail || thumbnail.length < 3 || !subCategoryId || !quantity || !color || !brand || !variant) {
+    if (!title || !description || !price || !images || !subCategoryId || !quantity || !color || !brand || !variant) {
       return res.status(403).json({
         success: false,
-        message: "All fields are required and at least 3 thumbnail (front, back, side) must be uploaded.",
+        message: "all fields are required",
       });
     }
-
 
     //   see the category is valid or not
     const subCategoryDetails = await SubCategory.findOne({
@@ -35,33 +30,19 @@ exports.createProduct = async (req, res) => {
       });
     }
 
-    // upload all thumbnail to cloudinary
-    const uploadedthumbnail = [];
-    for (const img of thumbnail) {
-      const uploaded = await uploadToCloudinary(
-        img,
-        process.env.FOLDER_NAME,
-        1000,
-        1000
-      );
-      if (uploaded && uploaded.secure_url) {
-        uploadedthumbnail.push(uploaded.secure_url);
-      }
-    }
-
-    if (uploadedthumbnail.length < 3) {
-      return res.status(500).json({
-        success: false,
-        message: "Failed to upload all thumbnail. Please try again.",
-      });
-    }
+    // upload to cloudinary
+    const image = await uploadToCloudinary(
+      images,
+      process.env.FOLDER_NAME,
+      1000,
+      1000
+    );
 
     const product = await Product.create({
       title,
       description,
       price,
-      thumbnail: uploadedthumbnail, // store all image URLs
-      thumbnail: uploadedthumbnail[0], // use first image as thumbnail
+      thumbnail: image.secure_url,
       postedBy: userId,
       subCategory: subCategoryDetails._id,
       quantity,
