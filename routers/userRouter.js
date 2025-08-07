@@ -45,23 +45,23 @@ router.get("/getAllAdmin", auth, isAdmin, getAllAdmins)
 
 router.get("/getAdminById/:id", auth, isAdmin, getAdminById)
 
-router.put("/updateprofile/:id",auth ,isAdmin,updateprofile)
+router.put("/updateprofile/:id",auth ,updateprofile)
 
  router.put("/updateDetails", auth, updateUser);
 
-router.put("/updateDetails/:id", auth, isAdmin, updateUser);
+router.put("/updateDetails/:id", auth, updateUser);
 
 
-router.put("/updateAddress", auth, isUser, updateAddress);
+router.put("/updateAddress", auth, updateAddress);
 
 router.delete("/deleteUser", auth, deleteUser); 
 
-router.delete("/deleteUser/:id", auth, isAdmin, deleteUser);
+router.delete("/deleteUser/:id", auth, deleteUser);
 
 
 router.get("/getUserDetail", auth, getUserDetails);
 
-router.get("/getUser",auth,isUser, getUserDetails);
+router.get("/getUser",auth, getUserDetails);
 
 router.post("/sendMail", sendConnectMail);
 

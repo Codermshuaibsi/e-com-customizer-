@@ -150,37 +150,10 @@ exports.removeAllFromCart = async (req, res) => {
   }
 };
 
-// fetch all cart of login user
-// exports.fetchAllCartItem = async (req, res) => {
-//   try {
-//     const userId = req.params.id || req.user.id;
-//     console.log(userId) 
-
-//     if (!userId) {
-//       return res.status(403).json({
-//         success: false,
-//         message: "please send the userId",
-//       });
-//     }
-
-//     const cartItems = await Product.find({ cart: userId });
-
-
-//     res.status(200).json({success:true ,
-//       message:"successfuly fetch the all cart item of user " });
-//       cartItems 
-//   } catch (error) {
-//     console.error(error);
-//     res
-//       .status(500)
-//       .json({ error: "Internal Server Error in fetch all cart items " });
-//   }
-// };
-
 exports.fetchAllCartItem = async (req, res) => {
   try {
     const userId = req.user?.id || req.params.id || req.query.userId;
-
+    
     if (!userId) {
       return res.status(403).json({
         success: false,
