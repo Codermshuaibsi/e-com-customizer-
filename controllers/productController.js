@@ -7,11 +7,16 @@ exports.createProduct = async (req, res) => {
   try {
     const { title, description, price, quantity, color, subCategoryId, brand, variant } = req.body;
 
-    const images = req.files.images;
+    // Debug log to see what files are received
+    console.log('req.files:', req.files);
+
+    const images = req.files && req.files.images;
 
     const userId = req.user.id;
 
-    if (!title || !description || !price || !images || !subCategoryId || !quantity || !color || !brand || !variant) {
+    // Debug log to see which field is missing or empty
+    console.log({ title, description, price, subCategoryId, quantity, color, brand, variant });
+    if (!title || !description || !price || !req.files || !req.files.images || !subCategoryId || !quantity || !color || !brand || !variant) {
       return res.status(403).json({
         success: false,
         message: "all fields are required",
