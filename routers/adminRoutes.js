@@ -4,8 +4,8 @@ const { getAdminDashboardStats } = require("../controllers/adminController")
 
 const { auth, isAdmin } = require("../middleware/auth")
 
-router.get("/dashboard",auth, isAdmin, getAdminDashboardStats)
+router.get("/dashboard", auth, isAdmin, getAdminDashboardStats)
 
-module.exports = router;  
+module.exports = router;
 
 
