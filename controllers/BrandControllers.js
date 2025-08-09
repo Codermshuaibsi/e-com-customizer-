@@ -7,15 +7,15 @@ exports.createBrand = async (req, res) => {
     try {
         const { name, metaTitle, metaDescription, keywords } = req.body;
 
-        const thumbnail = req.files.thumbnail;
+        const images = req.files.images;
 
-        if (!name || !metaTitle || !metaDescription || !keywords || !thumbnail) {
+        if (!name || !metaTitle || !metaDescription || !keywords || !images) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
         // Upload image to Cloudinary
         const image = await uploadToCloudinary(
-            thumbnail,
+            images,
             process.env.FOLDER_NAME,
             1000,
             1000
@@ -64,12 +64,12 @@ exports.getBrandById = async (req, res) => {
 exports.updateBrand = async (req, res) => {
     try {
         const { name, metaTitle, metaDescription, keywords, active } = req.body;
-        const thumbnail = req.files.thumbnail;
-        if (!name || !metaTitle || !metaDescription || !keywords || !thumbnail) {
+        const images = req.files.images;
+        if (!name || !metaTitle || !metaDescription || !keywords || !images) {
             return res.status(400).json({ message: "All fields are required" });
         }
         const image = await uploadToCloudinary(
-            thumbnail,
+            images,
             process.env.FOLDER_NAME,
             1000,
             1000

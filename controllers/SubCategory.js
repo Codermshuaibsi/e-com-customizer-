@@ -10,10 +10,10 @@ exports.createSubCategory = async (req, res) => {
   try {
     const { title, categoryId } = req.body;
 
-    const thumbnail = req.files.thumbnail;
+    const images = req.files.images;
 
     // validation
-    if (!title || !thumbnail || !categoryId) {
+    if (!title || !images || !categoryId) {
       return res.status(400).json({
         success: false,
         message: "all fields are required",
@@ -30,7 +30,7 @@ exports.createSubCategory = async (req, res) => {
     }
 
     const image = await uploadToCloudinary(
-      thumbnail,
+      images,
       process.env.FOLDER_NAME,
       1000,
       1000
@@ -39,7 +39,7 @@ exports.createSubCategory = async (req, res) => {
     // create entry in db of sub category
     const subCategoryDetails = await SubCategory.create({
       title,
-      thumbnail: image.secure_url,
+      images: image.secure_url,
     });
 
     //  update in the category also
@@ -190,7 +190,7 @@ exports.updateSubCategory = async (req, res) => {
 
     const { title } = req.body;
 
-    const thumbnail = req.files?.thumbnail;
+    const images = req.files?.images;
 
     if (!subCategoryId) {
       return res.status(403).json({
@@ -199,7 +199,7 @@ exports.updateSubCategory = async (req, res) => {
       });
     }
 
-    if (!title && !thumbnail) {
+    if (!title && !images) {
       return res.status(403).json({
         success: false,
         message: "no new update is done ",
@@ -220,15 +220,15 @@ exports.updateSubCategory = async (req, res) => {
     if (title) {
       subCategoryDetails.title = title;
     }
-    if (thumbnail) {
+    if (images) {
       const imageDetail = await uploadToCloudinary(
-        thumbnail,
+        images,
         process.env.FOLDER_NAME,
         1000,
         1000
       );
 
-      subCategoryDetails.thumbnail = imageDetail.secure_url;
+      subCategoryDetails.images = imageDetail.secure_url;
     }
 
     await subCategoryDetails.save();

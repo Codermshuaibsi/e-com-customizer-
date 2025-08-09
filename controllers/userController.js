@@ -418,7 +418,7 @@ exports.updateprofile = async(req,res)=>{
    try {
 
      const userId = req.user.id;
-  const thumbnail = req.files?.thumbnail;
+  const images = req.files?.images;
 
   if(!userId){
      return res.status(500).json({
@@ -427,7 +427,7 @@ exports.updateprofile = async(req,res)=>{
         });
   }
 
-   if(!thumbnail){
+   if(!images){
      return res.status(500).json({
           success: false,
           message: "fields are required ,please try again",
@@ -436,16 +436,16 @@ exports.updateprofile = async(req,res)=>{
 
   const userUpdate =await User.findOne({_id:userId});
 
-  if (thumbnail) {
+  if (images) {
         // upload to cloudinary
         const image = await uploadToCloudinary(
-          thumbnail,
+          images,
           process.env.FOLDER_NAME,
           1000,
           1000
         );
   
-        userUpdate.thumbnail = image.secure_url;
+        userUpdate.images = image.secure_url;
       }
 
         userUpdate.save();

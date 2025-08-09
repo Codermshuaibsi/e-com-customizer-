@@ -12,11 +12,11 @@ exports.createCategory = async (req, res) => {
     const {title} = req.body;
 
         
-    const thumbnail = req.files.thumbnail;
+    const images = req.files.images;
 
     
     // validation
-    if (!title || !thumbnail) {
+    if (!title || !images) {
       return res.status(400).json({
         success: false,
         message: "all fields are required",
@@ -24,7 +24,7 @@ exports.createCategory = async (req, res) => {
     }
 
     const image = await uploadToCloudinary(
-        thumbnail,
+        images,
         process.env.FOLDER_NAME,
         1000,
         1000
@@ -32,7 +32,7 @@ exports.createCategory = async (req, res) => {
 
 
     // create entry in db
-    const categoryDetails = await Category.create({ title ,thumbnail: image.secure_url});
+    const categoryDetails = await Category.create({ title ,images: image.secure_url});
 
 
 
@@ -55,7 +55,7 @@ exports.createCategory = async (req, res) => {
 exports.showAllCategory = async (req, res) => {
   try {
 
-    const allCategory = await Category.find({}, { title: true, thumbnail: true, subCategory: true })
+    const allCategory = await Category.find({}, { title: true, images: true, subCategory: true })
     .populate({
         path: "subCategory",
         populate: {

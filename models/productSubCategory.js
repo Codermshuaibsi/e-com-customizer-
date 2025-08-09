@@ -6,7 +6,7 @@ const subCategorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  thumbnail: {
+  images: {
     type: String,
     default: ""
   },
